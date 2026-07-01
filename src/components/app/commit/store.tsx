@@ -67,6 +67,7 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
     });
   },
   confirmSelection: async () => {
+    if (get().generating) return;
     const included = get().files.filter((f) => !f.excluded).map((f) => f.path);
     if (included.length === 0) {
       set({ error: "No file(s) to commit" });
@@ -129,8 +130,8 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
     await get().startCommitFlow();
   },
   commit: async () => {
-    const { files, message } = get();
-    if (!message) return;
+    const { files, message, committing } = get();
+    if (!message || committing) return;
     const included = files.filter((f) => !f.excluded).map((f) => f.path);
 
     set({ committing: true, commitOutput: [], error: null });

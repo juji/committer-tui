@@ -30,7 +30,7 @@ export function Bottom() {
   const buttons: ButtonSpec[] = [];
   if (committing || committed) {
     buttons.push({
-      label: committing ? "Committing..." : "Committed",
+      label: committing ? "Committing..." : "Commit",
       active: committed,
       onActivate: committed ? cancelCommitFlow : () => {},
     });
