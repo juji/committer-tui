@@ -17,23 +17,17 @@ export function Bottom() {
   const hasResult = useCommitFlowStore((s) => s.message !== null || s.error !== null || (s.active && s.files.length === 0));
   const generating = useCommitFlowStore((s) => s.generating);
   const committing = useCommitFlowStore((s) => s.committing);
-  const committed = useCommitFlowStore((s) => s.committed);
   const confirmSelection = useCommitFlowStore((s) => s.confirmSelection);
   const commit = useCommitFlowStore((s) => s.commit);
   const restart = useCommitFlowStore((s) => s.restart);
-  const cancelCommitFlow = useCommitFlowStore((s) => s.cancelCommitFlow);
 
   const focusArea = useAppScreenStore((s) => s.focusArea);
   const focusedButtonIndex = useAppScreenStore((s) => s.focusedButtonIndex);
   const setFocusedButtonIndex = useAppScreenStore((s) => s.setFocusedButtonIndex);
 
   const buttons: ButtonSpec[] = [];
-  if (committing || committed) {
-    buttons.push({
-      label: committing ? "Committing..." : "Commit",
-      active: committed,
-      onActivate: committed ? cancelCommitFlow : () => {},
-    });
+  if (committing) {
+    buttons.push({ label: "Committing...", onActivate: () => {} });
   } else if (hasResult) {
     if (hasMessage) buttons.push({ label: "Confirm", onActivate: commit });
     buttons.push({ label: "Redo", onActivate: restart });

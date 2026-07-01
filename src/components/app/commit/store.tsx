@@ -25,7 +25,6 @@ interface CommitFlowState {
   error: string | null;
   committing: boolean;
   commitOutput: string[];
-  committed: boolean;
   startCommitFlow: () => Promise<void>;
   toggleFileExcluded: (path: string) => void;
   confirmSelection: () => Promise<void>;
@@ -44,7 +43,6 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
   error: null,
   committing: false,
   commitOutput: [],
-  committed: false,
   startCommitFlow: async () => {
     useAppScreenStore.getState().closeHistoryEntry();
     const changedFiles = await getChangedFiles();
@@ -58,7 +56,6 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
       error: changedFiles.length === 0 ? "No file(s) to commit" : null,
       committing: false,
       commitOutput: [],
-      committed: false,
     });
   },
   toggleFileExcluded: (path) => {
@@ -118,7 +115,6 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
       error: null,
       committing: false,
       commitOutput: [],
-      committed: false,
     });
   },
   restart: async () => {
@@ -140,8 +136,8 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
     try {
       await runGitStreaming(["add", "--", ...included], appendLine);
       await runGitStreaming(["commit", "-m", message], appendLine);
-      set({ committing: false, committed: true });
       await useAppScreenStore.getState().loadHistory();
+      get().cancelCommitFlow();
     } catch (err) {
       set({ committing: false, error: err instanceof Error ? err.message : String(err) });
     }
