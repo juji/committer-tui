@@ -28,11 +28,9 @@ export function Bottom() {
   const buttons: ButtonSpec[] = [];
   if (committing) {
     buttons.push({ label: "Committing...", onActivate: () => {} });
-  } else if (committed) {
+  } else if (committed || hasResult) {
+    if (!committed && hasMessage) buttons.push({ label: "Confirm", onActivate: commit });
     buttons.push({ label: "Commit", onActivate: startCommitFlow });
-  } else if (hasResult) {
-    if (hasMessage) buttons.push({ label: "Confirm", onActivate: commit });
-    buttons.push({ label: "Redo", onActivate: startCommitFlow });
   } else if (commitFlowActive) {
     buttons.push({ label: generating ? "Generating..." : "Generate", onActivate: confirmSelection });
   } else {
