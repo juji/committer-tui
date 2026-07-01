@@ -11,13 +11,11 @@ export function AppScreen() {
   return (
     <box flexDirection="row" flexGrow={1}>
       <box flexDirection="column" flexGrow={1}>
-        <box flexGrow={1} borderStyle="rounded" borderColor="#333333" title="Main" titleColor="#ffffff" />
-        <box height={BUTTONS_HEIGHT} borderStyle="rounded" borderColor="#333333" title="Buttons" titleColor="#ffffff" />
+        <box id="main-area" flexGrow={1} />
+        <box id="bottom-area" height={BUTTONS_HEIGHT} backgroundColor="#0f0f0f" />
       </box>
 
-      {showStatus && (
-        <box width={STATUS_WIDTH} borderStyle="rounded" borderColor="#333333" title="Status" titleColor="#ffffff" />
-      )}
+      {showStatus && <box id="sidebar-area" width={STATUS_WIDTH} backgroundColor="#0d0d0d" />}
     </box>
   );
 }
