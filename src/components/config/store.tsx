@@ -8,7 +8,7 @@ interface ConfigValues {
   setModel: (providerId: string, model: Model) => void;
 }
 
-export const useConfigStore = create<ConfigValues>((set, get) => {
+export const useConfigFormStore = create<ConfigValues>((set, get) => {
   const persist = (patch: Partial<Pick<ConfigValues, "conventional" | "models">>) => {
     const next: Config = {
       conventional: patch.conventional ?? get().conventional,
@@ -29,6 +29,6 @@ export const useConfigStore = create<ConfigValues>((set, get) => {
   };
 });
 
-export function initConfigStore(config: Config) {
-  useConfigStore.setState({ conventional: config.conventional, models: config.models });
+export function initConfigFormStore(config: Config) {
+  useConfigFormStore.setState({ conventional: config.conventional, models: config.models });
 }

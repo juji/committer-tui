@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import type { Model } from "../../lib/config";
 import { BUILTIN_PROVIDERS, type ModelEntry } from "../../lib/provider";
 import { useAppStore } from "../../store/app-store";
-import { useConfigStore } from "./store";
+import { initConfigFormStore, useConfigFormStore } from "./store";
 
 const PROVIDER_OPTIONS: SelectOption[] = Object.values(BUILTIN_PROVIDERS).map((p) => ({
   name: p.name,
@@ -20,17 +20,26 @@ const CONVENTIONAL_OPTIONS: TabSelectOption[] = [
 const HOME_FIELD_COUNT = 2; // provider select, conventional tab-select
 
 export function ConfigScreen() {
-  const models = useConfigStore((s) => s.models);
-  const setConventional = useConfigStore((s) => s.setConventional);
-  const setModel = useConfigStore((s) => s.setModel);
+  const config = useAppStore((s) => s.config);
+  const models = useConfigFormStore((s) => s.models);
+  const setConventional = useConfigFormStore((s) => s.setConventional);
+  const setModel = useConfigFormStore((s) => s.setModel);
   const setScreen = useAppStore((s) => s.setScreen);
+
+  useEffect(() => {
+    if (config) initConfigFormStore(config);
+  }, []);
 
   const [providerId, setProviderId] = useState<string | null>(null);
   const [focusIndex, setFocusIndex] = useState<number | null>(0);
 
   useKeyboard((key) => {
+    if (providerId) return; // detail view handles its own tabbing/escape
+    if (key.name === "escape") {
+      if (config) setScreen("app");
+      return;
+    }
     if (key.name !== "tab") return;
-    if (providerId) return; // detail view handles its own tabbing
     setFocusIndex((i) => {
       if (key.shift) return i === null ? HOME_FIELD_COUNT - 1 : i === 0 ? null : i - 1;
       return i === null ? 0 : i === HOME_FIELD_COUNT - 1 ? null : i + 1;

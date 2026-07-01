@@ -3,10 +3,12 @@ import { createRoot } from "@opentui/react";
 import { ConfigScreen } from "./components/config";
 import { Layout } from "./components/layout";
 import { Splash } from "./components/splash";
+import { useGlobalShortcuts } from "./lib/shortcuts";
 import { useAppStore } from "./store/app-store";
 
 function App() {
   const screen = useAppStore((s) => s.screen);
+  useGlobalShortcuts();
 
   return (
     <Layout>
