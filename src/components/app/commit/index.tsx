@@ -48,9 +48,9 @@ export function CommitFileList() {
     <box flexDirection="column" flexGrow={1} padding={1}>
       {files.length > 0 && (
         <box flexDirection="column" height={headerHeight} flexShrink={0}>
-          <box height={1} />
+          <box height={1} flexShrink={0} />
           <text fg="#6b6b6b">Space to exclude, Enter to confirm, Esc to cancel</text>
-          <box height={1} />
+          <box height={1} flexShrink={0} />
           <select
             options={options}
             height={options.length}
@@ -72,9 +72,9 @@ export function CommitFileList() {
 
       {(generating || message || error) && (
         <box flexDirection="column" flexShrink={0}>
-          <box height={1} />
           {modelAttempts.map((a, i) => (
             <box key={i}>
+              <box height={1} flexShrink={0} />
               {a.status === "trying" && <Spinner label={`Generating commit message... (${a.provider} - ${a.model})`} />}
               {a.status === "failed" && (
                 <text>
@@ -95,8 +95,9 @@ export function CommitFileList() {
           ))}
           {message && (
             <box flexDirection="column">
+              <box height={1} flexShrink={0} />
               <text fg="#6b6b6b">Commit message:</text>
-              <box height={1} />
+              <box height={1} flexShrink={0} />
               <box backgroundColor="#161616" paddingY={1} paddingX={2}>
                 <text fg="#b0b0b0">{message}</text>
               </box>
@@ -108,7 +109,7 @@ export function CommitFileList() {
 
       {(committing || committed || commitOutput.length > 0) && (
         <box flexDirection="column" flexShrink={0}>
-          <box height={1} />
+          <box height={1} flexShrink={0} />
           {committing && <Spinner label="Committing..." />}
           {committed && <text fg="#22c55e">Commit created.</text>}
           <box flexDirection="column" marginTop={1}>

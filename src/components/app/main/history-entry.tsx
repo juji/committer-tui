@@ -20,12 +20,12 @@ export function HistoryEntryView() {
         <text fg="#6b6b6b">
           {commit.hash.slice(0, 7)} {new Date(commit.date).toLocaleString()}{" "}
         </text>
-        <box height={1} />
+        <box height={1} flexShrink={0} />
         <box backgroundColor="#0d0d0d" paddingY={1} paddingX={2}>
           <text fg="#b0b0b0">{commit.message}</text>
         </box>
       </box>
-      <box height={1} />
+      <box height={1} flexShrink={0} />
       {diffs && <FileDiffList diffs={diffs} focused={focusArea === "main"} />}
     </box>
   );
