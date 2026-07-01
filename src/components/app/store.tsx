@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { type CommitLogEntry, getCommitDiff, getCommitLog } from "../../lib/git";
+import { type CommitLogEntry, type FileDiff, getCommitDiff, getCommitLog } from "../../lib/git";
 
 export type FocusArea = "bottom" | "history" | "main";
 const FOCUS_ORDER: FocusArea[] = ["bottom", "history", "main"];
@@ -21,7 +21,7 @@ interface AppScreenState {
   focusHistory: (delta: number) => void;
 
   viewingCommit: CommitLogEntry | null;
-  viewingDiff: string | null;
+  viewingDiff: FileDiff[] | null;
   viewHistoryEntry: () => Promise<void>;
   closeHistoryEntry: () => void;
 }

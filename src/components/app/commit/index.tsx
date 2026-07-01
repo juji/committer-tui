@@ -1,6 +1,7 @@
 import type { SelectOption } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
 import { useState } from "react";
+import { FileDiffList } from "../file-diff-list";
 import { useAppScreenStore } from "../store";
 import { Spinner } from "./spinner";
 import { useCommitFlowStore } from "./store";
@@ -65,15 +66,7 @@ export function CommitFileList() {
       {diffs && (
         <box flexDirection="column" flexGrow={1}>
           <box height={1} flexShrink={0} />
-          <scrollbox flexGrow={1} focused={isFocused}>
-            {diffs.map((d) => (
-              <box key={d.path} flexDirection="column" marginBottom={1}>
-                <text fg="#6b6b6b">{d.path}</text>
-                <box height={1} />
-                <diff diff={d.diff} height={d.diff.split("\n").length + 2} showLineNumbers />
-              </box>
-            ))}
-          </scrollbox>
+          <FileDiffList diffs={diffs} focused={isFocused} />
         </box>
       )}
 

@@ -69,8 +69,16 @@ export async function getCommitLog(limit = 50): Promise<CommitLogEntry[]> {
     });
 }
 
-export async function getCommitDiff(hash: string): Promise<string> {
-  return runGit(["show", "--format=", hash]);
+export async function getCommitDiff(hash: string): Promise<FileDiff[]> {
+  const nameOutput = await runGit(["show", "--format=", "--name-only", hash]);
+  const paths = nameOutput.split("\n").filter((line) => line.length > 0);
+
+  const results: FileDiff[] = [];
+  for (const path of paths) {
+    const diff = await runGit(["show", "--format=", hash, "--", path]);
+    if (diff) results.push({ path, diff });
+  }
+  return results;
 }
 
 export async function getDiffs(paths: string[]): Promise<FileDiff[]> {

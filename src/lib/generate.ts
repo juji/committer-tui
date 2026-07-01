@@ -4,6 +4,8 @@ import { BUILTIN_PROVIDERS } from './provider.js'
 
 const DELIMITER_START = '<<<COMMIT_MESSAGE>>>'
 const DELIMITER_END = '<<<END_COMMIT_MESSAGE>>>'
+const START_RE = /<{2,}COMMIT_MESSAGE>{2,}/
+const END_RE = /<{2,}END_COMMIT_MESSAGE>{2,}/
 
 export async function generateCommitMessage(diff: string, model: Model, conventional: boolean): Promise<string> {
   const p = BUILTIN_PROVIDERS[model.provider]
@@ -19,11 +21,11 @@ export async function generateCommitMessage(diff: string, model: Model, conventi
     prompt: `Git diff:\n\n${diff}`,
   })
 
-  const start = text.indexOf(DELIMITER_START)
-  const end = text.indexOf(DELIMITER_END)
-  if (start === -1 || end === -1 || end <= start) {
-    throw new Error('Model did not return a commit message in the expected format.')
+  const startMatch = text.match(START_RE)
+  const endMatch = text.match(END_RE)
+  if (!startMatch || !endMatch || endMatch.index! <= startMatch.index!) {
+    throw new Error(`Model did not return a commit message in the expected format. Raw output: ${text}`)
   }
 
-  return text.slice(start + DELIMITER_START.length, end).trim()
+  return text.slice(startMatch.index! + startMatch[0].length, endMatch.index!).trim()
 }
