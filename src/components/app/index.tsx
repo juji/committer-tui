@@ -1,4 +1,5 @@
 import { useTerminalDimensions } from "@opentui/react";
+import { SCROLLBAR_OPTIONS } from "../../lib/globals";
 
 const STATUS_MIN_WIDTH = 80;
 const STATUS_WIDTH = 30;
@@ -11,11 +12,13 @@ export function AppScreen() {
   return (
     <box flexDirection="row" flexGrow={1}>
       <box flexDirection="column" flexGrow={1}>
-        <box id="main-area" flexGrow={1} />
-        <box id="bottom-area" height={BUTTONS_HEIGHT} backgroundColor="#0f0f0f" />
+        <scrollbox id="main-area" flexGrow={1} padding={1} scrollbarOptions={SCROLLBAR_OPTIONS} />
+        <box id="bottom-area" height={BUTTONS_HEIGHT} backgroundColor="#151515" />
       </box>
 
-      {showStatus && <box id="sidebar-area" width={STATUS_WIDTH} backgroundColor="#0d0d0d" />}
+      {showStatus && (
+        <scrollbox id="sidebar-area" width={STATUS_WIDTH} backgroundColor="#0d0d0d" scrollbarOptions={SCROLLBAR_OPTIONS} />
+      )}
     </box>
   );
 }
