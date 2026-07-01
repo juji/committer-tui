@@ -3,10 +3,10 @@ import { useAppStore } from "../store/app-store";
 
 export function useGlobalShortcuts() {
   const screen = useAppStore((s) => s.screen);
-  const setScreen = useAppStore((s) => s.setScreen);
+  const openConfig = useAppStore((s) => s.openConfig);
 
   useKeyboard((key) => {
     if (screen === "splash") return;
-    if (key.ctrl && key.name === "g") setScreen("config");
+    if (key.ctrl && key.name === "g") openConfig();
   });
 }

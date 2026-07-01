@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { type Config, type Model, writeConfig } from "../../lib/config";
+import { type Config, isValidConfig, type Model, writeConfig } from "../../lib/config";
+import { useAppStore } from "../../store/app-store";
 
 interface ConfigValues {
   conventional: boolean;
@@ -16,6 +17,7 @@ export const useConfigFormStore = create<ConfigValues>((set, get) => {
     };
     set(next);
     writeConfig(next);
+    if (isValidConfig(next)) useAppStore.setState({ config: next });
   };
 
   return {

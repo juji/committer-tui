@@ -24,7 +24,7 @@ export function ConfigScreen() {
   const models = useConfigFormStore((s) => s.models);
   const setConventional = useConfigFormStore((s) => s.setConventional);
   const setModel = useConfigFormStore((s) => s.setModel);
-  const setScreen = useAppStore((s) => s.setScreen);
+  const closeConfig = useAppStore((s) => s.closeConfig);
 
   useEffect(() => {
     if (config) initConfigFormStore(config);
@@ -36,7 +36,7 @@ export function ConfigScreen() {
   useKeyboard((key) => {
     if (providerId) return; // detail view handles its own tabbing/escape
     if (key.name === "escape") {
-      if (config) setScreen("app");
+      closeConfig();
       return;
     }
     if (key.name !== "tab") return;
@@ -55,28 +55,27 @@ export function ConfigScreen() {
         onSave={(model) => {
           setModel(providerId, model);
           setProviderId(null);
-          setScreen("app");
         }}
       />
     );
   }
 
   return (
-    <box flexDirection="column" padding={1} flexGrow={1}>
-      <text attributes={1}>Tab to navigate, Enter to select</text>
-
-      <box marginTop={1}>
+    <box flexDirection="column" padding={1}>
+      <box marginBottom={1}>
         <text>Select Provider:</text>
       </box>
       <select
         options={PROVIDER_OPTIONS}
         height={6}
+        showDescription={false}
+        itemSpacing={0}
         focused={focusIndex === 0}
         focusedBackgroundColor="#333333"
         onSelect={(index) => setProviderId(PROVIDER_IDS[index] ?? null)}
       />
 
-      <box marginTop={1}>
+      <box marginTop={1} marginBottom={1}>
         <text>Conventional Commit:</text>
       </box>
       <tab-select
@@ -85,6 +84,10 @@ export function ConfigScreen() {
         focusedBackgroundColor="#333333"
         onSelect={(index) => setConventional(index === 0)}
       />
+
+      <box marginTop={1}>
+        <text fg="#6b6b6b">Tab to navigate, Enter to select</text>
+      </box>
     </box>
   );
 }
@@ -146,8 +149,8 @@ function ProviderDetail({
   const modelIndex = field++;
 
   return (
-    <box flexDirection="column" padding={1} flexGrow={1}>
-      <text attributes={1}>{provider.name} — Tab to navigate, Esc to go back</text>
+    <box flexDirection="column" padding={1}>
+      <text attributes={1}>{provider.name}</text>
 
       {apiKeyIndex >= 0 && (
         <box flexDirection="column" marginTop={1}>
@@ -175,7 +178,7 @@ function ProviderDetail({
         </box>
       )}
 
-      <box flexDirection="column" marginTop={1} flexGrow={1}>
+      <box flexDirection="column" marginTop={1}>
         <text>Model{error ? ` (${error})` : ""}</text>
         <select
           options={modelOptions}
@@ -187,6 +190,10 @@ function ProviderDetail({
             onSave({ name: provider.name, provider: providerId as Model["provider"], model: option.name, apiKey, baseURL: baseURL || undefined });
           }}
         />
+      </box>
+
+      <box marginTop={1}>
+        <text fg="#6b6b6b">Tab to navigate, Esc to go back</text>
       </box>
     </box>
   );
