@@ -45,7 +45,7 @@ export function CommitFileList() {
           height={options.length}
           showDescription={false}
           itemSpacing={0}
-          focused
+          focused={!diffs}
           focusedBackgroundColor="#333333"
           onChange={(index) => setFocusedIndex(index)}
         />
@@ -54,7 +54,7 @@ export function CommitFileList() {
       {diffs && (
         <box flexDirection="column" flexGrow={1}>
           <box height={1} flexShrink={0} />
-          <scrollbox flexGrow={1}>
+          <scrollbox flexGrow={1} focused>
             {diffs.map((d) => (
               <box key={d.path} flexDirection="column" marginBottom={1}>
                 <text fg="#6b6b6b">{d.path}</text>
