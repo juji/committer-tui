@@ -10,13 +10,13 @@ export function Sidebar() {
   const loadHistory = useAppScreenStore((s) => s.loadHistory);
   const focusArea = useAppScreenStore((s) => s.focusArea);
   const historyIndex = useAppScreenStore((s) => s.historyIndex);
-  const committed = useCommitFlowStore((s) => s.committed);
+  const commitFlowActive = useCommitFlowStore((s) => s.active);
 
   const isFocused = focusArea === "history";
 
   useEffect(() => {
     loadHistory();
-  }, [committed]);
+  }, [commitFlowActive]);
 
   return (
     <box
