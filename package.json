@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "bun run --watch src/index.tsx",
     "dev:test": "bun run src/index.tsx",
-    "dev:rmconf": "rm -rf ~/.config/committer && rm -rf ~/.cache/committer"
+    "dev:rmconf": "rm -rf ~/.config/committer && rm -rf ~/.cache/committer",
+    "random-text": "bun run scripts/random-text.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
