@@ -15,6 +15,7 @@ export function CommitFileList() {
   const error = useCommitFlowStore((s) => s.error);
   const committing = useCommitFlowStore((s) => s.committing);
   const commitOutput = useCommitFlowStore((s) => s.commitOutput);
+  const committed = useCommitFlowStore((s) => s.committed);
   const toggleFileExcluded = useCommitFlowStore((s) => s.toggleFileExcluded);
   const cancelCommitFlow = useCommitFlowStore((s) => s.cancelCommitFlow);
   const focusArea = useAppScreenStore((s) => s.focusArea);
@@ -29,7 +30,7 @@ export function CommitFileList() {
       cancelCommitFlow();
       return;
     }
-    if (!isFocused || committing || hasResult) return;
+    if (!isFocused || committing || committed || hasResult) return;
     if (key.name === "space") {
       const file = files[focusedIndex];
       if (file) toggleFileExcluded(file.path);
@@ -105,10 +106,11 @@ export function CommitFileList() {
         </box>
       )}
 
-      {(committing || commitOutput.length > 0) && (
+      {(committing || committed || commitOutput.length > 0) && (
         <box flexDirection="column" flexShrink={0}>
           <box height={1} />
           {committing && <Spinner label="Committing..." />}
+          {committed && <text fg="#22c55e">Commit created.</text>}
           <box flexDirection="column" marginTop={1}>
             {commitOutput.map((line, i) => (
               <text key={i} fg="#6b6b6b">
