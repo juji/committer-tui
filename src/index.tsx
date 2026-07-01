@@ -1,5 +1,6 @@
 import { createCliRenderer } from "@opentui/core";
 import { createRoot } from "@opentui/react";
+import { AppScreen } from "./components/app";
 import { Layout } from "./components/layout";
 import { Splash } from "./components/splash";
 import { useGlobalShortcuts } from "./lib/shortcuts";
@@ -12,7 +13,7 @@ function App() {
   return (
     <Layout>
       {screen === "splash" && <Splash />}
-      {screen === "app" && <text>App</text>}
+      {screen === "app" && <AppScreen />}
     </Layout>
   );
 }
