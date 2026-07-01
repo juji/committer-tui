@@ -1,14 +1,18 @@
 import { useKeyboard } from "@opentui/react";
 import { useAppScreenStore } from "../store";
+import { useCommitFlowStore } from "../commit/store";
 
 const BUTTONS_HEIGHT = 5;
 
 export function Bottom({ showSidebarToggle }: { showSidebarToggle: boolean }) {
   const sidebarOpen = useAppScreenStore((s) => s.sidebarOpen);
   const toggleSidebar = useAppScreenStore((s) => s.toggleSidebar);
+  const commitFlowActive = useCommitFlowStore((s) => s.active);
+  const startCommitFlow = useCommitFlowStore((s) => s.startCommitFlow);
 
   useKeyboard((key) => {
     if (showSidebarToggle && key.name === "y" && key.ctrl) toggleSidebar();
+    if (!commitFlowActive && key.name === "return") startCommitFlow();
   });
 
   return (
