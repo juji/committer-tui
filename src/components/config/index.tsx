@@ -1,9 +1,10 @@
 import type { SelectOption, TabSelectOption } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
 import { useEffect, useState } from "react";
-import { type Config, type Model } from "../lib/config";
-import { BUILTIN_PROVIDERS, type ModelEntry } from "../lib/provider";
-import { useAppStore } from "../store/app-store";
+import type { Model } from "../../lib/config";
+import { BUILTIN_PROVIDERS, type ModelEntry } from "../../lib/provider";
+import { useAppStore } from "../../store/app-store";
+import { useConfigStore } from "./store";
 
 const PROVIDER_OPTIONS: SelectOption[] = Object.values(BUILTIN_PROVIDERS).map((p) => ({
   name: p.name,
@@ -16,14 +17,13 @@ const CONVENTIONAL_OPTIONS: TabSelectOption[] = [
   { name: "Off", description: "" },
 ];
 
-const HOME_FIELD_COUNT = 2; // conventional toggle, provider tab-select
+const HOME_FIELD_COUNT = 2; // provider select, conventional tab-select
 
 export function ConfigScreen() {
-  const config = useAppStore((s) => s.config);
-  const saveConfig = useAppStore((s) => s.saveConfig);
-
-  const conventional = config ? config.conventional : true;
-  const models = config ? config.models : [];
+  const models = useConfigStore((s) => s.models);
+  const setConventional = useConfigStore((s) => s.setConventional);
+  const setModel = useConfigStore((s) => s.setModel);
+  const setScreen = useAppStore((s) => s.setScreen);
 
   const [providerId, setProviderId] = useState<string | null>(null);
   const [focusIndex, setFocusIndex] = useState<number | null>(0);
@@ -37,10 +37,6 @@ export function ConfigScreen() {
     });
   });
 
-  const persist = (patch: Partial<Config>) => {
-    saveConfig({ conventional, models, ...patch });
-  };
-
   if (providerId) {
     return (
       <ProviderDetail
@@ -48,9 +44,9 @@ export function ConfigScreen() {
         existing={models.find((m) => m.provider === providerId) ?? null}
         onBack={() => setProviderId(null)}
         onSave={(model) => {
-          const rest = models.filter((m) => m.provider !== providerId);
-          persist({ models: [...rest, model] });
+          setModel(providerId, model);
           setProviderId(null);
+          setScreen("app");
         }}
       />
     );
@@ -78,7 +74,7 @@ export function ConfigScreen() {
         options={CONVENTIONAL_OPTIONS}
         focused={focusIndex === 1}
         focusedBackgroundColor="#333333"
-        onSelect={(index) => persist({ conventional: index === 0 })}
+        onSelect={(index) => setConventional(index === 0)}
       />
     </box>
   );
