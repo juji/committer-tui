@@ -140,6 +140,7 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
       await runGitStreaming(["add", "--", ...included], appendLine);
       await runGitStreaming(["commit", "-m", message], appendLine);
       set({ committing: false, committed: true });
+      await useAppScreenStore.getState().loadHistory();
     } catch (err) {
       set({ committing: false, error: err instanceof Error ? err.message : String(err) });
     }

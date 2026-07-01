@@ -21,6 +21,7 @@ export function Bottom() {
   const confirmSelection = useCommitFlowStore((s) => s.confirmSelection);
   const commit = useCommitFlowStore((s) => s.commit);
   const restart = useCommitFlowStore((s) => s.restart);
+  const cancelCommitFlow = useCommitFlowStore((s) => s.cancelCommitFlow);
 
   const focusArea = useAppScreenStore((s) => s.focusArea);
   const focusedButtonIndex = useAppScreenStore((s) => s.focusedButtonIndex);
@@ -28,7 +29,11 @@ export function Bottom() {
 
   const buttons: ButtonSpec[] = [];
   if (committing || committed) {
-    buttons.push({ label: committing ? "Committing..." : "Committed", active: committed, onActivate: () => {} });
+    buttons.push({
+      label: committing ? "Committing..." : "Committed",
+      active: committed,
+      onActivate: committed ? cancelCommitFlow : () => {},
+    });
   } else if (hasResult) {
     if (hasMessage) buttons.push({ label: "Confirm", onActivate: commit });
     buttons.push({ label: "Redo", onActivate: restart });
