@@ -28,14 +28,49 @@ export function getConfigPath(): string {
   return path.join(getConfigDir(), "config.json");
 }
 
+const PROVIDERS = ["gemini", "groq", "cerebras", "requesty", "openrouter", "ollama"];
 
-export async function readConfig(): Promise<Config | null> {
+function isValidModel(model: unknown): model is Model {
+  if (typeof model !== "object" || model === null) return false;
+  const m = model as Record<string, unknown>;
+  return (
+    typeof m.name === "string" &&
+    typeof m.provider === "string" &&
+    PROVIDERS.includes(m.provider) &&
+    typeof m.model === "string" &&
+    typeof m.apiKey === "string" &&
+    (m.baseURL === undefined || typeof m.baseURL === "string")
+  );
+}
+
+export function isValidConfig(config: unknown): config is Config {
+  if (typeof config !== "object" || config === null) return false;
+  const c = config as Record<string, unknown>;
+  return (
+    typeof c.conventional === "boolean" &&
+    Array.isArray(c.models) &&
+    c.models.length > 0 &&
+    c.models.every(isValidModel)
+  );
+}
+
+export async function readConfig(): Promise<Config | false | null> {
+  let raw: string;
   try {
-    return JSON.parse(await readFile(getConfigPath(), "utf-8"));
+    raw = await readFile(getConfigPath(), "utf-8");
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code === "ENOENT") return null;
     throw err;
   }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return false;
+  }
+
+  return isValidConfig(parsed) ? parsed : false;
 }
 
 export async function writeConfig(config: Config): Promise<void> {

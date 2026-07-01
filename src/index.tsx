@@ -1,12 +1,18 @@
 import { createCliRenderer } from "@opentui/core";
 import { createRoot } from "@opentui/react";
+import { ConfigScreen } from "./components/config";
 import { Layout } from "./components/layout";
 import { Splash } from "./components/splash";
+import { useAppStore } from "./store/app-store";
 
 function App() {
+  const screen = useAppStore((s) => s.screen);
+
   return (
     <Layout>
-      <Splash />
+      {screen === "splash" && <Splash />}
+      {screen === "config" && <ConfigScreen />}
+      {screen === "app" && <text>App</text>}
     </Layout>
   );
 }
