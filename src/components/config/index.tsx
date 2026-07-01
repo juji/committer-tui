@@ -24,7 +24,7 @@ export function ConfigScreen() {
   const models = useConfigFormStore((s) => s.models);
   const setConventional = useConfigFormStore((s) => s.setConventional);
   const setModel = useConfigFormStore((s) => s.setModel);
-  const closeConfig = useAppStore((s) => s.closeConfig);
+  const closePopUp = useAppStore((s) => s.closePopUp);
 
   useEffect(() => {
     if (config) initConfigFormStore(config);
@@ -36,7 +36,7 @@ export function ConfigScreen() {
   useKeyboard((key) => {
     if (providerId) return; // detail view handles its own tabbing/escape
     if (key.name === "escape") {
-      closeConfig();
+      closePopUp();
       return;
     }
     if (key.name !== "tab") return;

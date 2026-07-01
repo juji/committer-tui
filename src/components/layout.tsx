@@ -7,17 +7,17 @@ const BACKDROP_COLOR = RGBA.fromValues(0, 0, 0, 0.6);
 
 export function Layout({ children }: { children?: ReactNode }) {
   const config = useAppStore((s) => s.config);
-  const configOpen = useAppStore((s) => s.configOpen);
+  const popUpOpen = useAppStore((s) => s.popUpOpen);
 
   const hints = ["ctrl+c exit"];
-  if (!configOpen) hints.push("ctrl+g config");
+  if (!popUpOpen) hints.push("ctrl+g config");
   else if (config) hints.push("esc back");
 
   return (
     <box flexDirection="column" flexGrow={1}>
       <box flexGrow={1} backgroundColor="#000000">
         {children}
-        {configOpen && (
+        {popUpOpen === "config" && (
           <box
             position="absolute"
             top={0}
