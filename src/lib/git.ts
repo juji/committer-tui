@@ -13,6 +13,25 @@ async function runGit(args: string[], allowedExitCodes: number[] = [0]): Promise
   return stdout;
 }
 
+export async function runGitStreaming(args: string[], onLine: (line: string) => void): Promise<void> {
+  const proc = Bun.spawn(["git", ...args], { cwd: process.cwd(), stdout: "pipe", stderr: "pipe" });
+
+  const readLines = async (stream: ReadableStream<Uint8Array>) => {
+    for await (const chunk of stream) {
+      const text = new TextDecoder().decode(chunk);
+      for (const line of text.split("\n")) {
+        if (line) onLine(line);
+      }
+    }
+  };
+
+  await Promise.all([readLines(proc.stdout), readLines(proc.stderr)]);
+  const exitCode = await proc.exited;
+  if (exitCode !== 0) {
+    throw new Error(`git ${args.join(" ")} failed with exit code ${exitCode}`);
+  }
+}
+
 export async function getChangedFiles(): Promise<ChangedFile[]> {
   const output = await runGit(["status", "--porcelain", "-uall"]);
   return output

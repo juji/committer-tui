@@ -9,7 +9,10 @@ export function Bottom({ showSidebarToggle }: { showSidebarToggle: boolean }) {
   const toggleSidebar = useAppScreenStore((s) => s.toggleSidebar);
   const commitFlowActive = useCommitFlowStore((s) => s.active);
   const startCommitFlow = useCommitFlowStore((s) => s.startCommitFlow);
+  const hasMessage = useCommitFlowStore((s) => s.message !== null);
   const hasResult = useCommitFlowStore((s) => s.message !== null || s.error !== null);
+  const committing = useCommitFlowStore((s) => s.committing);
+  const committed = useCommitFlowStore((s) => s.committed);
 
   useKeyboard((key) => {
     if (showSidebarToggle && key.name === "y" && key.ctrl) toggleSidebar();
@@ -18,10 +21,12 @@ export function Bottom({ showSidebarToggle }: { showSidebarToggle: boolean }) {
 
   return (
     <box id="bottom-area" height={BUTTONS_HEIGHT} flexDirection="row" backgroundColor="#151515" padding={1}>
-      {hasResult ? (
+      {committing || committed ? (
+        <Button label={committing ? "Committing..." : "Committed"} active={committed} />
+      ) : hasResult ? (
         <>
-          <Button label="Confirm (Enter)" />
-          <Button label="Redo (Backspace)" marginLeft={1} />
+          {hasMessage && <Button label="Confirm (Enter)" />}
+          <Button label="Redo (Backspace)" marginLeft={hasMessage ? 1 : 0} />
         </>
       ) : (
         <Button label="Commit (Enter)" />

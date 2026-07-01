@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { type ChangedFile, type FileDiff, getChangedFiles, getDiffs } from "../../../lib/git";
+import { type ChangedFile, type FileDiff, getChangedFiles, getDiffs, runGitStreaming } from "../../../lib/git";
 import { generateCommitMessage } from "../../../lib/generate";
 import { useAppStore } from "../../../store/app-store";
 
@@ -14,11 +14,15 @@ interface CommitFlowState {
   generating: boolean;
   message: string | null;
   error: string | null;
+  committing: boolean;
+  commitOutput: string[];
+  committed: boolean;
   startCommitFlow: () => Promise<void>;
   toggleFileExcluded: (path: string) => void;
   confirmSelection: () => Promise<void>;
   cancelCommitFlow: () => void;
   restart: () => Promise<void>;
+  commit: () => Promise<void>;
 }
 
 export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
@@ -28,6 +32,9 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
   generating: false,
   message: null,
   error: null,
+  committing: false,
+  commitOutput: [],
+  committed: false,
   startCommitFlow: async () => {
     const changedFiles = await getChangedFiles();
     set({
@@ -36,7 +43,10 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
       diffs: null,
       generating: false,
       message: null,
-      error: null,
+      error: changedFiles.length === 0 ? "No file(s) to commit" : null,
+      committing: false,
+      commitOutput: [],
+      committed: false,
     });
   },
   toggleFileExcluded: (path) => {
@@ -46,6 +56,10 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
   },
   confirmSelection: async () => {
     const included = get().files.filter((f) => !f.excluded).map((f) => f.path);
+    if (included.length === 0) {
+      set({ error: "No file(s) to commit" });
+      return;
+    }
     const diffs = await getDiffs(included);
     set({ diffs, generating: true, message: null, error: null });
 
@@ -66,9 +80,35 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
     set({ generating: false, message: null, error: "All AI models failed to generate a commit message." });
   },
   cancelCommitFlow: () => {
-    set({ active: false, files: [], diffs: null, generating: false, message: null, error: null });
+    set({
+      active: false,
+      files: [],
+      diffs: null,
+      generating: false,
+      message: null,
+      error: null,
+      committing: false,
+      commitOutput: [],
+      committed: false,
+    });
   },
   restart: async () => {
     await get().startCommitFlow();
+  },
+  commit: async () => {
+    const { files, message } = get();
+    if (!message) return;
+    const included = files.filter((f) => !f.excluded).map((f) => f.path);
+
+    set({ committing: true, commitOutput: [], error: null });
+    const appendLine = (line: string) => set((s) => ({ commitOutput: [...s.commitOutput, line] }));
+
+    try {
+      await runGitStreaming(["add", "--", ...included], appendLine);
+      await runGitStreaming(["commit", "-m", message], appendLine);
+      set({ committing: false, committed: true });
+    } catch (err) {
+      set({ committing: false, error: err instanceof Error ? err.message : String(err) });
+    }
   },
 }));

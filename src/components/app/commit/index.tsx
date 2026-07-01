@@ -10,21 +10,30 @@ export function CommitFileList() {
   const generating = useCommitFlowStore((s) => s.generating);
   const message = useCommitFlowStore((s) => s.message);
   const error = useCommitFlowStore((s) => s.error);
+  const committing = useCommitFlowStore((s) => s.committing);
+  const commitOutput = useCommitFlowStore((s) => s.commitOutput);
+  const committed = useCommitFlowStore((s) => s.committed);
   const toggleFileExcluded = useCommitFlowStore((s) => s.toggleFileExcluded);
   const confirmSelection = useCommitFlowStore((s) => s.confirmSelection);
   const cancelCommitFlow = useCommitFlowStore((s) => s.cancelCommitFlow);
   const restart = useCommitFlowStore((s) => s.restart);
+  const commit = useCommitFlowStore((s) => s.commit);
 
   const [focusedIndex, setFocusedIndex] = useState(0);
 
-  const hasResult = message !== null || error !== null;
+  const hasResult = message !== null || error !== null || files.length === 0;
 
   useKeyboard((key) => {
     if (key.name === "escape") {
       cancelCommitFlow();
       return;
     }
+    if (committing || committed) return;
     if (hasResult) {
+      if (key.name === "return" && message) {
+        commit();
+        return;
+      }
       if (key.name === "backspace") restart();
       return;
     }
@@ -47,20 +56,22 @@ export function CommitFileList() {
 
   return (
     <box flexDirection="column" flexGrow={1} padding={1}>
-      <box flexDirection="column" height={headerHeight} flexShrink={0}>
-        <box height={1} />
-        <text fg="#6b6b6b">Space to exclude, Enter to confirm, Esc to cancel</text>
-        <box height={1} />
-        <select
-          options={options}
-          height={options.length}
-          showDescription={false}
-          itemSpacing={0}
-          focused={!diffs}
-          focusedBackgroundColor="#333333"
-          onChange={(index) => setFocusedIndex(index)}
-        />
-      </box>
+      {files.length > 0 && (
+        <box flexDirection="column" height={headerHeight} flexShrink={0}>
+          <box height={1} />
+          <text fg="#6b6b6b">Space to exclude, Enter to confirm, Esc to cancel</text>
+          <box height={1} />
+          <select
+            options={options}
+            height={options.length}
+            showDescription={false}
+            itemSpacing={0}
+            focused={!diffs}
+            focusedBackgroundColor="#333333"
+            onChange={(index) => setFocusedIndex(index)}
+          />
+        </box>
+      )}
 
       {diffs && (
         <box flexDirection="column" flexGrow={1}>
@@ -91,6 +102,21 @@ export function CommitFileList() {
             </box>
           )}
           {error && <text fg="#ef4444">{error}</text>}
+        </box>
+      )}
+
+      {(committing || committed || commitOutput.length > 0) && (
+        <box flexDirection="column" flexShrink={0}>
+          <box height={1} />
+          {committing && <Spinner label="Committing..." />}
+          {committed && <text fg="#22c55e">Commit created.</text>}
+          <box flexDirection="column" marginTop={1}>
+            {commitOutput.map((line, i) => (
+              <text key={i} fg="#6b6b6b">
+                {line}
+              </text>
+            ))}
+          </box>
         </box>
       )}
     </box>
