@@ -9,6 +9,7 @@ export function Bottom({ showSidebarToggle }: { showSidebarToggle: boolean }) {
   const toggleSidebar = useAppScreenStore((s) => s.toggleSidebar);
   const commitFlowActive = useCommitFlowStore((s) => s.active);
   const startCommitFlow = useCommitFlowStore((s) => s.startCommitFlow);
+  const hasResult = useCommitFlowStore((s) => s.message !== null || s.error !== null);
 
   useKeyboard((key) => {
     if (showSidebarToggle && key.name === "y" && key.ctrl) toggleSidebar();
@@ -17,7 +18,14 @@ export function Bottom({ showSidebarToggle }: { showSidebarToggle: boolean }) {
 
   return (
     <box id="bottom-area" height={BUTTONS_HEIGHT} flexDirection="row" backgroundColor="#151515" padding={1}>
-      <Button label="Commit (Enter)" />
+      {hasResult ? (
+        <>
+          <Button label="Confirm (Enter)" />
+          <Button label="Redo (Backspace)" marginLeft={1} />
+        </>
+      ) : (
+        <Button label="Commit (Enter)" />
+      )}
       {showSidebarToggle && (
         <Button label={sidebarOpen ? "Hide History (ctrl+y)" : "Show History (ctrl+y)"} active={sidebarOpen} marginLeft={1} />
       )}
