@@ -20,7 +20,6 @@ export function Bottom() {
   const committed = useCommitFlowStore((s) => s.committed);
   const confirmSelection = useCommitFlowStore((s) => s.confirmSelection);
   const commit = useCommitFlowStore((s) => s.commit);
-  const restart = useCommitFlowStore((s) => s.restart);
 
   const focusArea = useAppScreenStore((s) => s.focusArea);
   const focusedButtonIndex = useAppScreenStore((s) => s.focusedButtonIndex);
@@ -33,7 +32,7 @@ export function Bottom() {
     buttons.push({ label: "Commit", onActivate: startCommitFlow });
   } else if (hasResult) {
     if (hasMessage) buttons.push({ label: "Confirm", onActivate: commit });
-    buttons.push({ label: "Redo", onActivate: restart });
+    buttons.push({ label: "Redo", onActivate: startCommitFlow });
   } else if (commitFlowActive) {
     buttons.push({ label: generating ? "Generating..." : "Generate", onActivate: confirmSelection });
   } else {

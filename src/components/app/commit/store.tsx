@@ -30,7 +30,6 @@ interface CommitFlowState {
   toggleFileExcluded: (path: string) => void;
   confirmSelection: () => Promise<void>;
   cancelCommitFlow: () => void;
-  restart: () => Promise<void>;
   commit: () => Promise<void>;
 }
 
@@ -120,14 +119,6 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
       commitOutput: [],
       committed: false,
     });
-  },
-  restart: async () => {
-    const changedFiles = await getChangedFiles();
-    if (changedFiles.length === 0) {
-      get().cancelCommitFlow();
-      return;
-    }
-    await get().startCommitFlow();
   },
   commit: async () => {
     const { files, message, committing } = get();
