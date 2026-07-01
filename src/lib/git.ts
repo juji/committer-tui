@@ -45,6 +45,34 @@ export interface FileDiff {
   diff: string;
 }
 
+export interface CommitLogEntry {
+  hash: string;
+  date: string;
+  message: string;
+}
+
+const RECORD_SEP = "\x1e";
+const FIELD_SEP = "\x1f";
+
+export async function getCommitLog(limit = 50): Promise<CommitLogEntry[]> {
+  const output = await runGit(
+    ["log", `--max-count=${limit}`, `--pretty=format:%H${FIELD_SEP}%aI${FIELD_SEP}%s${RECORD_SEP}`],
+    [0, 128], // exit 128 when there are no commits yet
+  );
+  return output
+    .split(RECORD_SEP)
+    .map((record) => record.trim())
+    .filter(Boolean)
+    .map((record) => {
+      const [hash, date, message] = record.split(FIELD_SEP);
+      return { hash: hash ?? "", date: date ?? "", message: message ?? "" };
+    });
+}
+
+export async function getCommitDiff(hash: string): Promise<string> {
+  return runGit(["show", "--format=", hash]);
+}
+
 export async function getDiffs(paths: string[]): Promise<FileDiff[]> {
   if (paths.length === 0) return [];
 

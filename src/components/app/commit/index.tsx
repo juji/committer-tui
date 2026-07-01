@@ -1,6 +1,7 @@
 import type { SelectOption } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
 import { useState } from "react";
+import { useAppScreenStore } from "../store";
 import { Spinner } from "./spinner";
 import { useCommitFlowStore } from "./store";
 
@@ -14,33 +15,20 @@ export function CommitFileList() {
   const commitOutput = useCommitFlowStore((s) => s.commitOutput);
   const committed = useCommitFlowStore((s) => s.committed);
   const toggleFileExcluded = useCommitFlowStore((s) => s.toggleFileExcluded);
-  const confirmSelection = useCommitFlowStore((s) => s.confirmSelection);
   const cancelCommitFlow = useCommitFlowStore((s) => s.cancelCommitFlow);
-  const restart = useCommitFlowStore((s) => s.restart);
-  const commit = useCommitFlowStore((s) => s.commit);
+  const focusArea = useAppScreenStore((s) => s.focusArea);
 
   const [focusedIndex, setFocusedIndex] = useState(0);
 
   const hasResult = message !== null || error !== null || files.length === 0;
+  const isFocused = focusArea === "main";
 
   useKeyboard((key) => {
     if (key.name === "escape") {
       cancelCommitFlow();
       return;
     }
-    if (committing || committed) return;
-    if (hasResult) {
-      if (key.name === "return" && message) {
-        commit();
-        return;
-      }
-      if (key.name === "backspace") restart();
-      return;
-    }
-    if (key.name === "return") {
-      confirmSelection();
-      return;
-    }
+    if (!isFocused || committing || committed || hasResult) return;
     if (key.name === "space") {
       const file = files[focusedIndex];
       if (file) toggleFileExcluded(file.path);
@@ -66,7 +54,7 @@ export function CommitFileList() {
             height={options.length}
             showDescription={false}
             itemSpacing={0}
-            focused={!diffs}
+            focused={isFocused && !diffs}
             focusedBackgroundColor="#333333"
             onChange={(index) => setFocusedIndex(index)}
           />
@@ -76,7 +64,7 @@ export function CommitFileList() {
       {diffs && (
         <box flexDirection="column" flexGrow={1}>
           <box height={1} flexShrink={0} />
-          <scrollbox flexGrow={1} focused>
+          <scrollbox flexGrow={1} focused={isFocused}>
             {diffs.map((d) => (
               <box key={d.path} flexDirection="column" marginBottom={1}>
                 <text fg="#6b6b6b">{d.path}</text>

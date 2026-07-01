@@ -8,10 +8,15 @@ const BACKDROP_COLOR = RGBA.fromValues(0, 0, 0, 0.6);
 export function Layout({ children }: { children?: ReactNode }) {
   const config = useAppStore((s) => s.config);
   const popUpOpen = useAppStore((s) => s.popUpOpen);
+  const screen = useAppStore((s) => s.screen);
 
   const hints = ["ctrl+c exit"];
-  if (!popUpOpen) hints.push("ctrl+g config");
-  else if (config) hints.push("esc back");
+  if (!popUpOpen) {
+    hints.push("ctrl+g config");
+    if (screen === "app") hints.push("ctrl+y history");
+  } else if (config) {
+    hints.push("esc back");
+  }
 
   return (
     <box flexDirection="column" flexGrow={1}>
