@@ -25,6 +25,7 @@ export function Main() {
       padding={1}
       scrollbarOptions={SCROLLBAR_OPTIONS}
       backgroundColor={isFocused ? "#0a0a0a" : "#000000"}
+      focused={isFocused}
     />
   );
 }
