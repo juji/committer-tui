@@ -4,7 +4,7 @@ import { Main } from "./main";
 import { Sidebar } from "./sidebar";
 import { useAppScreenStore } from "./store";
 
-const STATUS_MIN_WIDTH = 80;
+const STATUS_MIN_WIDTH = 100;
 
 export function AppScreen() {
   const { width } = useTerminalDimensions();
