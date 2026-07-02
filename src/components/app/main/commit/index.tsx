@@ -38,9 +38,9 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
   });
 
   useEffect(() => {
-    if (!message) return;
+    if (!message && !committed) return;
     scrollRef.current?.scrollTo({ x: 0, y: scrollRef.current.scrollHeight });
-  }, [message, scrollRef]);
+  }, [message, committed, scrollRef]);
 
   const options: SelectOption[] = files.map((f) => ({
     name: `[${f.excluded ? " " : "x"}] ${f.status} ${f.path}`,
