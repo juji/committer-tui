@@ -60,7 +60,7 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
     if (!message && !committed) return;
     const id = setTimeout(() => {
       scrollRef.current?.scrollTo({ x: 0, y: scrollRef.current.scrollHeight });
-    }, 0);
+    }, 50);
     return () => clearTimeout(id);
   }, [message, committed, scrollRef]);
 
