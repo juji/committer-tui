@@ -2,10 +2,8 @@ import { generateText } from 'ai'
 import type { Model } from './config.js'
 import { BUILTIN_PROVIDERS } from './provider.js'
 
-const DELIMITER_START = '<<<COMMIT_MESSAGE>>>'
-const DELIMITER_END = '<<<END_COMMIT_MESSAGE>>>'
-const START_RE = /<{2,}COMMIT_MESSAGE>{2,}/
-const END_RE = /<{2,}END_COMMIT_MESSAGE>{2,}/
+const START_RE = /`{5}commit-message/
+const END_RE = /`{5}/
 
 export async function generateCommitMessage(diff: string, model: Model, conventional: boolean): Promise<string> {
   const p = BUILTIN_PROVIDERS[model.provider]
@@ -17,15 +15,19 @@ export async function generateCommitMessage(diff: string, model: Model, conventi
 
   const { text } = await generateText({
     model: await p.createModel(model),
-    system: `${formatInstructions}\n\nWrap the commit message, and only the commit message, between ${DELIMITER_START} and ${DELIMITER_END}. Do not include any other commentary, explanation, or preamble outside those markers.`,
+    system: `${formatInstructions}\n\nWrap the commit message, and only the commit message, in a fenced block like this:\n\n\`\`\`\`\`commit-message\nthe message\n\`\`\`\`\`\n\nDo not include any other commentary, explanation, or preamble outside that block.`,
     prompt: `Git diff:\n\n${diff}`,
   })
 
   const startMatch = text.match(START_RE)
-  const endMatch = text.match(END_RE)
-  if (!startMatch || !endMatch || endMatch.index! <= startMatch.index!) {
+  if (!startMatch) {
+    throw new Error(`Model did not return a commit message in the expected format. Raw output: ${text}`)
+  }
+  const contentStart = startMatch.index! + startMatch[0].length
+  const endMatch = text.slice(contentStart).match(END_RE)
+  if (!endMatch) {
     throw new Error(`Model did not return a commit message in the expected format. Raw output: ${text}`)
   }
 
-  return text.slice(startMatch.index! + startMatch[0].length, endMatch.index!).trim()
+  return text.slice(contentStart, contentStart + endMatch.index!).trim()
 }
