@@ -25,6 +25,7 @@ interface AppScreenState {
   viewingCommit: CommitLogEntry | null;
   viewingDiff: FileDiff[] | null;
   viewHistoryEntry: () => Promise<void>;
+  viewHistoryDelta: (delta: number) => Promise<void>;
   closeHistoryEntry: () => void;
 }
 
@@ -75,6 +76,15 @@ export const useAppScreenStore = create<AppScreenState>((set, get) => ({
     if (!entry) return;
     const diff = await getCommitDiff(entry.hash);
     set({ viewingCommit: entry, viewingDiff: diff });
+  },
+  viewHistoryDelta: async (delta) => {
+    const { history, historyIndex } = get();
+    if (history.length === 0) return;
+    const nextIndex = (historyIndex + delta + history.length) % history.length;
+    const entry = history[nextIndex];
+    if (!entry) return;
+    const diff = await getCommitDiff(entry.hash);
+    set({ historyIndex: nextIndex, viewingCommit: entry, viewingDiff: diff });
   },
   closeHistoryEntry: () => set({ viewingCommit: null, viewingDiff: null }),
 }));

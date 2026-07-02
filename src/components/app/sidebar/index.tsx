@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import type { ScrollBoxRenderable } from "@opentui/core";
+import { useEffect, useRef } from "react";
 import { SCROLLBAR_OPTIONS } from "../../../lib/globals";
 import { useCommitFlowStore } from "../main/commit/store";
 import { useAppScreenStore } from "../store";
@@ -13,10 +14,17 @@ export function Sidebar() {
   const commitFlowActive = useCommitFlowStore((s) => s.active);
 
   const isFocused = focusArea === "history";
+  const scrollRef = useRef<ScrollBoxRenderable>(null);
 
   useEffect(() => {
     loadHistory();
   }, [commitFlowActive]);
+
+  useEffect(() => {
+    if (!isFocused) return;
+    const entry = log[historyIndex];
+    if (entry) scrollRef.current?.scrollChildIntoView(entry.hash);
+  }, [isFocused, historyIndex, log]);
 
   return (
     <box
@@ -29,6 +37,7 @@ export function Sidebar() {
         <text fg="#6b6b6b">History (↑↓ to select)</text>
       </box>
       <scrollbox
+        ref={scrollRef}
         flexGrow={1}
         padding={1}
         backgroundColor={isFocused ? "#131313" : "#0d0d0d"}
@@ -41,6 +50,7 @@ export function Sidebar() {
           return (
             <box
               key={entry.hash}
+              id={entry.hash}
               flexDirection="column"
               paddingX={1}
               marginBottom={i < log.length - 1 ? 1 : 0}

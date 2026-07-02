@@ -14,10 +14,11 @@ export function HistoryEntryView() {
   const focusArea = useAppScreenStore((s) => s.focusArea);
   const toggleSidebar = useAppScreenStore((s) => s.toggleSidebar);
   const cycleFocusArea = useAppScreenStore((s) => s.cycleFocusArea);
+  const viewHistoryDelta = useAppScreenStore((s) => s.viewHistoryDelta);
 
   const { keyHandler } = useAppContext();
-  const stateRef = useRef({ closeHistoryEntry, toggleSidebar, cycleFocusArea });
-  stateRef.current = { closeHistoryEntry, toggleSidebar, cycleFocusArea };
+  const stateRef = useRef({ closeHistoryEntry, toggleSidebar, cycleFocusArea, viewHistoryDelta, focusArea });
+  stateRef.current = { closeHistoryEntry, toggleSidebar, cycleFocusArea, viewHistoryDelta, focusArea };
 
   useEffect(() => {
     const onKey = (key: KeyEvent) => {
@@ -32,6 +33,15 @@ export function HistoryEntryView() {
       }
       if (key.name === "tab") {
         s.cycleFocusArea();
+        return;
+      }
+      if (s.focusArea !== "history") return;
+      if (key.name === "up") {
+        s.viewHistoryDelta(-1);
+        return;
+      }
+      if (key.name === "down") {
+        s.viewHistoryDelta(1);
       }
     };
 
