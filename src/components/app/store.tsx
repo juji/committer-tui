@@ -10,7 +10,7 @@ interface AppScreenState {
   toggleSidebar: () => void;
 
   focusArea: FocusArea;
-  cycleFocusArea: () => void;
+  cycleFocusArea: (delta?: number) => void;
 
   focusedButtonIndex: number;
   setFocusedButtonIndex: (index: number) => void;
@@ -38,18 +38,21 @@ export const useAppScreenStore = create<AppScreenState>((set, get) => ({
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
 
   focusArea: "bottom",
-  cycleFocusArea: () => {
+  cycleFocusArea: (delta = 1) => {
     const { focusArea, focusedButtonIndex, bottomButtonCount } = get();
-    if (focusArea === "bottom" && focusedButtonIndex < bottomButtonCount - 1) {
-      set({ focusedButtonIndex: focusedButtonIndex + 1 });
-      return;
+    if (focusArea === "bottom") {
+      const nextButtonIndex = focusedButtonIndex + delta;
+      if (nextButtonIndex >= 0 && nextButtonIndex < bottomButtonCount) {
+        set({ focusedButtonIndex: nextButtonIndex });
+        return;
+      }
     }
-    const nextIndex = (FOCUS_ORDER.indexOf(focusArea) + 1) % FOCUS_ORDER.length;
+    const nextIndex = (FOCUS_ORDER.indexOf(focusArea) + delta + FOCUS_ORDER.length) % FOCUS_ORDER.length;
     const next = FOCUS_ORDER[nextIndex]!;
     set({
       focusArea: next,
       sidebarOpen: next === "history" ? true : get().sidebarOpen,
-      focusedButtonIndex: next === "bottom" ? 0 : focusedButtonIndex,
+      focusedButtonIndex: next === "bottom" ? (delta < 0 ? get().bottomButtonCount - 1 : 0) : focusedButtonIndex,
     });
   },
 

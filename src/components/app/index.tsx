@@ -32,7 +32,7 @@ export function AppScreen() {
           return true;
         }
         if (key.name === "tab") {
-          s.cycleFocusArea();
+          s.cycleFocusArea(key.shift ? -1 : 1);
           return true;
         }
         if (s.focusArea !== "history") return false;
