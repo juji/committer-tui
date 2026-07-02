@@ -7,6 +7,7 @@ export type Screen = "splash" | "app";
 export type PopUp = "config" | "edit-message";
 
 type ApiValidationStatus = "idle" | "validating" | "valid" | "partial" | "failed";
+export type ProviderStatus = "checking" | "valid" | "invalid";
 
 interface AppState {
   screen: Screen;
@@ -19,6 +20,7 @@ interface AppState {
   saveConfig: (config: Config) => Promise<void>;
   apiValidationStatus: ApiValidationStatus;
   invalidProviders: string[];
+  providerStatuses: Record<string, ProviderStatus>;
   checkApiKeys: () => Promise<void>;
 }
 
@@ -33,6 +35,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   apiValidationStatus: "idle",
   invalidProviders: [],
+  providerStatuses: {},
   loadConfig: async () => {
     const config = await readConfig();
     set({ config, popUpOpen: config ? null : "config" });
@@ -46,8 +49,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     info(`checkApiKeys: config=${config ? "exists" : "null/undefined"}, type=${typeof config}`);
     if (!config) return;
 
-    set({ apiValidationStatus: "validating", invalidProviders: [] });
-
     const models = config.models;
     info(`checkApiKeys: ${models.length} model(s) to check`);
 
@@ -58,16 +59,21 @@ export const useAppStore = create<AppState>((set, get) => ({
       return;
     }
 
+    const statuses: Record<string, ProviderStatus> = {};
+    models.forEach((_, i) => { statuses[String(i)] = "checking"; });
+    set({ apiValidationStatus: "validating", invalidProviders: [], providerStatuses: statuses });
+
     const invalidProviders: string[] = [];
     let hasValidKey = false;
 
-    for (const model of models) {
+    for (const [i, model] of models.entries()) {
       info(`checkApiKeys: checking ${model.provider} - ${model.name}`);
       const provider = BUILTIN_PROVIDERS[model.provider];
       if (provider) {
         try {
           const isValid = await provider.checkApiKey(model);
           info(`checkApiKeys: ${model.provider} valid=${isValid}`);
+          set({ providerStatuses: { ...get().providerStatuses, [String(i)]: isValid ? "valid" : "invalid" } });
           if (!isValid) {
             invalidProviders.push(model.provider);
           } else {
@@ -75,10 +81,12 @@ export const useAppStore = create<AppState>((set, get) => ({
           }
         } catch (e) {
           error(`checkApiKeys: ${model.provider} error: ${e}`);
+          set({ providerStatuses: { ...get().providerStatuses, [String(i)]: "invalid" } });
           invalidProviders.push(model.provider);
         }
       } else {
         error(`checkApiKeys: unknown provider ${model.provider}`);
+        set({ providerStatuses: { ...get().providerStatuses, [String(i)]: "invalid" } });
       }
     }
 
