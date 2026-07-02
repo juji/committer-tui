@@ -141,7 +141,10 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
           {committing && <Spinner label="Committing..." />}
           {committed && (
             <box flexDirection="column" backgroundColor="#0d3b1e" padding={1}>
-              <text fg="#ffffff">Commit created.</text>
+              <text fg="#ffffff" attributes={1}>
+                Commit created.
+              </text>
+              <box height={1} flexShrink={0} />
               {commitOutput.map((line, i) => (
                 <text key={i} fg="#ffffff">
                   {line}
