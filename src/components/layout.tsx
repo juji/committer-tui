@@ -38,9 +38,9 @@ export function Layout({ children }: { children?: ReactNode }) {
             backgroundColor={BACKDROP_COLOR}
             zIndex={10}
           >
-            <box width="95%" maxWidth={80} borderStyle="rounded" borderColor="#333333" title="Config" titleColor="#ffffff" backgroundColor="#111111" zIndex={11}>
+            <scrollbox width="95%" maxWidth={80} maxHeight="95%" borderStyle="rounded" borderColor="#333333" title="Config" titleColor="#ffffff" backgroundColor="#111111" zIndex={11}>
               <ConfigScreen />
-            </box>
+            </scrollbox>
           </box>
         )}
         <Toast />
