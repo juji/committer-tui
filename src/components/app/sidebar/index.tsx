@@ -36,19 +36,22 @@ export function Sidebar() {
         stickyScroll
         stickyStart="top"
       >
-        {log.map((entry, i) => (
-          <box
-            key={entry.hash}
-            flexDirection="column"
-            marginBottom={1}
-            backgroundColor={isFocused && i === historyIndex ? "#1f2937" : undefined}
-          >
-            <text fg="#4d4d4d">
-              {entry.hash.slice(0, 7)} {new Date(entry.date).toLocaleDateString()}
-            </text>
-            <text fg="#8a8a8a">{entry.message}</text>
-          </box>
-        ))}
+        {log.map((entry, i) => {
+          const selected = isFocused && i === historyIndex;
+          return (
+            <box
+              key={entry.hash}
+              flexDirection="column"
+              paddingX={1}
+              marginBottom={i < log.length - 1 ? 1 : 0}
+            >
+              <text fg={selected ? "#7d7d7d" : "#4d4d4d"} marginBottom={1}>
+                {entry.hash.slice(0, 7)} {new Date(entry.date).toLocaleDateString()}
+              </text>
+              <text fg={selected ? "#ffffff" : "#8a8a8a"}>{entry.message}</text>
+            </box>
+          );
+        })}
       </scrollbox>
     </box>
   );
