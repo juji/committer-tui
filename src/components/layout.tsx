@@ -38,7 +38,7 @@ export function Layout({ children }: { children?: ReactNode }) {
             backgroundColor={BACKDROP_COLOR}
             zIndex={10}
           >
-            <box width={50} borderStyle="rounded" borderColor="#333333" title="Config" titleColor="#ffffff" backgroundColor="#111111" zIndex={11}>
+            <box width="95%" maxWidth={80} borderStyle="rounded" borderColor="#333333" title="Config" titleColor="#ffffff" backgroundColor="#111111" zIndex={11}>
               <ConfigScreen />
             </box>
           </box>

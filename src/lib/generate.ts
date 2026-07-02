@@ -5,17 +5,18 @@ import { BUILTIN_PROVIDERS } from './provider.js'
 const START_RE = /`{3}commit-message/
 const END_RE = /`{3}/
 
-export async function generateCommitMessage(diff: string, model: Model, conventional: boolean): Promise<string> {
+export const FENCE_INSTRUCTIONS =
+  'Wrap the commit message, and only the commit message, in a fenced block like this:\n\n```commit-message\nthe message\n```\n\nDo not include any other commentary, explanation, or preamble outside that block.'
+
+export async function generateCommitMessage(diff: string, model: Model, instructionPrefix: string, instructionSuffix: string): Promise<string> {
   const p = BUILTIN_PROVIDERS[model.provider]
   if (!p) throw new Error(`Unknown provider: ${model.provider}`)
 
-  const formatInstructions = conventional
-    ? 'Generate a concise conventional commit message from the git diff.\n\nFormat: type(scope): description\n\nBody with bullet points if needed.'
-    : 'Generate a concise commit message from the git diff.'
+  const system = [instructionPrefix, FENCE_INSTRUCTIONS, instructionSuffix].filter(Boolean).join('\n\n')
 
   const { text } = await generateText({
     model: await p.createModel(model),
-    system: `${formatInstructions}\n\nWrap the commit message, and only the commit message, in a fenced block like this:\n\n\`\`\`commit-message\nthe message\n\`\`\`\n\nDo not include any other commentary, explanation, or preamble outside that block.`,
+    system,
     prompt: `Git diff:\n\n${diff}`,
   })
 

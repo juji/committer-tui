@@ -1,7 +1,8 @@
-import type { SelectOption, TabSelectOption } from "@opentui/core";
+import type { SelectOption, TextareaRenderable } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Model } from "../../lib/config";
+import { FENCE_INSTRUCTIONS } from "../../lib/generate";
 import { BUILTIN_PROVIDERS, type ModelEntry } from "../../lib/provider";
 import { useAppStore } from "../../store/app-store";
 import { initConfigFormStore, useConfigFormStore } from "./store";
@@ -12,20 +13,20 @@ const PROVIDER_OPTIONS: SelectOption[] = Object.values(BUILTIN_PROVIDERS).map((p
 }));
 const PROVIDER_IDS = Object.keys(BUILTIN_PROVIDERS);
 
-const CONVENTIONAL_OPTIONS: TabSelectOption[] = [
-  { name: "On", description: "" },
-  { name: "Off", description: "" },
-];
-
-const HOME_FIELD_COUNT = 2; // provider select, conventional tab-select
+const HOME_FIELD_COUNT = 3; // provider select, instruction prefix textarea, instruction suffix textarea
 
 export function ConfigScreen() {
   const config = useAppStore((s) => s.config);
   const models = useConfigFormStore((s) => s.models);
-  const setConventional = useConfigFormStore((s) => s.setConventional);
+  const instructionPrefix = useConfigFormStore((s) => s.instructionPrefix);
+  const instructionSuffix = useConfigFormStore((s) => s.instructionSuffix);
+  const setInstructionPrefix = useConfigFormStore((s) => s.setInstructionPrefix);
+  const setInstructionSuffix = useConfigFormStore((s) => s.setInstructionSuffix);
   const setModel = useConfigFormStore((s) => s.setModel);
   const removeModel = useConfigFormStore((s) => s.removeModel);
   const closePopUp = useAppStore((s) => s.closePopUp);
+  const prefixRef = useRef<TextareaRenderable>(null);
+  const suffixRef = useRef<TextareaRenderable>(null);
 
   useEffect(() => {
     if (config) initConfigFormStore(config);
@@ -35,9 +36,15 @@ export function ConfigScreen() {
   const [focusIndex, setFocusIndex] = useState<number | null>(0);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
+  const flushTextareas = () => {
+    setInstructionPrefix(prefixRef.current?.plainText ?? "");
+    setInstructionSuffix(suffixRef.current?.plainText ?? "");
+  };
+
   useKeyboard((key) => {
     if (providerId) return; // detail view handles its own tabbing/escape
     if (key.name === "escape") {
+      flushTextareas();
       closePopUp();
       return;
     }
@@ -49,6 +56,7 @@ export function ConfigScreen() {
       return;
     }
     if (key.name !== "tab") return;
+    flushTextareas();
     setFocusIndex((i) => {
       if (key.shift) return i === null ? HOME_FIELD_COUNT - 1 : i === 0 ? null : i - 1;
       return i === null ? 0 : i === HOME_FIELD_COUNT - 1 ? null : i + 1;
@@ -95,17 +103,39 @@ export function ConfigScreen() {
       />
 
       <box marginTop={1} marginBottom={1}>
-        <text>Conventional Commit:</text>
+        <text>Instruction Prefix:</text>
       </box>
-      <tab-select
-        options={CONVENTIONAL_OPTIONS}
-        focused={focusIndex === 1}
-        focusedBackgroundColor="#333333"
-        onSelect={(index) => setConventional(index === 0)}
-      />
+      <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 1 ? "#4a9eff" : "#2a2a2a"}>
+        <textarea
+          ref={prefixRef}
+          initialValue={instructionPrefix}
+          height={6}
+          backgroundColor="transparent"
+          focused={focusIndex === 1}
+          onSubmit={() => setInstructionPrefix(prefixRef.current?.plainText ?? "")}
+        />
+      </box>
+
+      <box marginTop={1} marginBottom={1} paddingX={1} borderStyle="rounded" borderColor="#2a2a2a">
+        <text fg="#8a8a8a">{FENCE_INSTRUCTIONS}</text>
+      </box>
+
+      <box marginBottom={1}>
+        <text>Instruction Suffix:</text>
+      </box>
+      <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 2 ? "#4a9eff" : "#2a2a2a"}>
+        <textarea
+          ref={suffixRef}
+          initialValue={instructionSuffix}
+          height={6}
+          backgroundColor="transparent"
+          focused={focusIndex === 2}
+          onSubmit={() => setInstructionSuffix(suffixRef.current?.plainText ?? "")}
+        />
+      </box>
 
       <box marginTop={1}>
-        <text fg="#6b6b6b">Tab to navigate, Enter to select</text>
+        <text fg="#6b6b6b">Tab to navigate, Enter (in textarea: Ctrl+Enter) to save field</text>
       </box>
     </box>
   );

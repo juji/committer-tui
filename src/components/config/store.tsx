@@ -1,30 +1,36 @@
 import { create } from "zustand";
-import { type Config, isValidConfig, type Model, writeConfig } from "../../lib/config";
+import { DEFAULT_INSTRUCTION_PREFIX, type Config, isValidConfig, type Model, writeConfig } from "../../lib/config";
 import { useAppStore } from "../../store/app-store";
 
 interface ConfigValues {
-  conventional: boolean;
+  instructionPrefix: string;
+  instructionSuffix: string;
   models: Model[];
-  setConventional: (conventional: boolean) => void;
+  setInstructionPrefix: (instructionPrefix: string) => void;
+  setInstructionSuffix: (instructionSuffix: string) => void;
   setModel: (providerId: string, model: Model) => void;
   removeModel: (providerId: string) => void;
 }
 
 export const useConfigFormStore = create<ConfigValues>((set, get) => {
-  const persist = (patch: Partial<Pick<ConfigValues, "conventional" | "models">>) => {
+  const persist = (patch: Partial<Pick<ConfigValues, "instructionPrefix" | "instructionSuffix" | "models">>) => {
     const next: Config = {
-      conventional: patch.conventional ?? get().conventional,
+      instructionPrefix: patch.instructionPrefix ?? get().instructionPrefix,
+      instructionSuffix: patch.instructionSuffix ?? get().instructionSuffix,
       models: patch.models ?? get().models,
     };
     set(next);
+    if (!isValidConfig(next)) return; // never overwrite the saved file with an incomplete form state
     writeConfig(next);
-    if (isValidConfig(next)) useAppStore.setState({ config: next });
+    useAppStore.setState({ config: next });
   };
 
   return {
-    conventional: true,
+    instructionPrefix: DEFAULT_INSTRUCTION_PREFIX,
+    instructionSuffix: "",
     models: [],
-    setConventional: (conventional) => persist({ conventional }),
+    setInstructionPrefix: (instructionPrefix) => persist({ instructionPrefix }),
+    setInstructionSuffix: (instructionSuffix) => persist({ instructionSuffix }),
     setModel: (providerId, model) => {
       const rest = get().models.filter((m) => m.provider !== providerId);
       persist({ models: [...rest, model] });
@@ -36,5 +42,9 @@ export const useConfigFormStore = create<ConfigValues>((set, get) => {
 });
 
 export function initConfigFormStore(config: Config) {
-  useConfigFormStore.setState({ conventional: config.conventional, models: config.models });
+  useConfigFormStore.setState({
+    instructionPrefix: config.instructionPrefix,
+    instructionSuffix: config.instructionSuffix,
+    models: config.models,
+  });
 }

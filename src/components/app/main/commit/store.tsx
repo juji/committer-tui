@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { type ChangedFile, type FileDiff, getChangedFiles, getDiffs, runGitStreaming } from "../../../../lib/git";
 import { generateCommitMessage } from "../../../../lib/generate";
+import { DEFAULT_INSTRUCTION_PREFIX } from "../../../../lib/config";
 import { useAppStore } from "../../../../store/app-store";
 import { useAppScreenStore } from "../../store";
 
@@ -83,7 +84,12 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
       const attempt: ModelAttempt = { provider: model.provider, model: model.model, status: "trying" };
       set((s) => ({ modelAttempts: [...s.modelAttempts, attempt] }));
       try {
-        const message = await generateCommitMessage(combinedDiff, model, config ? config.conventional : true);
+        const message = await generateCommitMessage(
+          combinedDiff,
+          model,
+          config ? config.instructionPrefix : DEFAULT_INSTRUCTION_PREFIX,
+          config ? config.instructionSuffix : "",
+        );
         set((s) => ({
           generating: false,
           message,

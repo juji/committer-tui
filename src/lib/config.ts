@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { info, json } from "localog";
 
 
 export interface Model {
@@ -12,9 +13,13 @@ export interface Model {
 }
 
 export interface Config {
-  conventional: boolean
+  instructionPrefix: string
+  instructionSuffix: string
   models: Model[]
 }
+
+export const DEFAULT_INSTRUCTION_PREFIX =
+  'Generate a concise conventional commit message from the git diff.\n\nFormat: type(scope): description\n\nBody with bullet points if needed.'
 
 
 export function getConfigDir(): string {
@@ -47,7 +52,8 @@ export function isValidConfig(config: unknown): config is Config {
   if (typeof config !== "object" || config === null) return false;
   const c = config as Record<string, unknown>;
   return (
-    typeof c.conventional === "boolean" &&
+    (c.instructionPrefix === undefined || typeof c.instructionPrefix === "string") &&
+    (c.instructionSuffix === undefined || typeof c.instructionSuffix === "string") &&
     Array.isArray(c.models) &&
     c.models.length > 0 &&
     c.models.every(isValidModel)
@@ -70,10 +76,19 @@ export async function readConfig(): Promise<Config | false | null> {
     return false;
   }
 
-  return isValidConfig(parsed) ? parsed : false;
+  if (!isValidConfig(parsed)) {
+    json(parsed);
+    return false;
+  }
+  return {
+    ...parsed,
+    instructionPrefix: parsed.instructionPrefix ?? DEFAULT_INSTRUCTION_PREFIX,
+    instructionSuffix: parsed.instructionSuffix ?? "",
+  };
 }
 
 export async function writeConfig(config: Config): Promise<void> {
+  info(`writeConfig: ${config.models.length} model(s) -> ${getConfigPath()}`);
   await mkdir(getConfigDir(), { recursive: true });
   await writeFile(getConfigPath(), JSON.stringify(config, null, 2));
 }

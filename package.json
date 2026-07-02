@@ -4,10 +4,11 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun run --watch src/index.tsx",
+    "dev": "__LOCALOG_ENABLED=\"1\" bun run --watch src/index.tsx",
     "dev:test": "bun run src/index.tsx",
     "dev:rmconf": "rm -rf ~/.config/committer && rm -rf ~/.cache/committer",
-    "random-text": "bun run scripts/random-text.ts"
+    "random-text": "bun run scripts/random-text.ts",
+    "localog": "localog"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -17,14 +18,15 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@opentui/core": "^0.4.2",
-    "@opentui/react": "^0.4.2",
-    "react": "^19.2.6",
-    "zustand": "^5.0.14",
     "@ai-sdk/google": "^4.0.3",
     "@ai-sdk/openai": "^4.0.4",
+    "@opentui/core": "^0.4.2",
+    "@opentui/react": "^0.4.2",
     "ai": "^7.0.8",
+    "localog": "^1.0.3",
     "ollama-ai-provider": "^1.2.0",
-    "zod": "4"
+    "react": "^19.2.6",
+    "zod": "4",
+    "zustand": "^5.0.14"
   }
 }
