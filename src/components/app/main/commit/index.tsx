@@ -140,7 +140,7 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
           <box height={1} flexShrink={0} />
           {committing && <Spinner label="Committing..." />}
           {committed && (
-            <box flexDirection="column" backgroundColor="#0d3b1e" padding={1}>
+            <box flexDirection="column" backgroundColor="#0d3b1e" paddingX={2} paddingY={1}>
               <text fg="#ffffff" attributes={1}>
                 Commit created.
               </text>
