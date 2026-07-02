@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { FileDiffList } from "../../file-diff-list";
 import { useAppScreenStore } from "../../store";
 import { useKeyboardStore } from "../../../../store/keyboard-store";
+import { theme } from "../../../../lib/theme";
 
 const SCOPE_ID = "app/history";
 
@@ -46,12 +47,13 @@ export function HistoryEntryView() {
   return (
     <>
       <box flexDirection="column" height={2 + messageLines + 2} flexShrink={0}>
-        <text fg="#6b6b6b">
-          {commit.hash.slice(0, 7)} {new Date(commit.date).toLocaleString()}{" "}
+        <text fg={theme.text.muted}>
+          <span fg={theme.accent.purple}>{commit.hash.slice(0, 7)}</span>
+          {" "}{new Date(commit.date).toLocaleString()}
         </text>
         <box height={1} flexShrink={0} />
-        <box backgroundColor="#0d0d0d" paddingY={1} paddingX={2}>
-          <text fg="#b0b0b0">{commit.message}</text>
+        <box backgroundColor={theme.bg.card} paddingY={1} paddingX={2}>
+          <text fg={theme.text.secondary}>{commit.message}</text>
         </box>
       </box>
       <box height={1} flexShrink={0} />

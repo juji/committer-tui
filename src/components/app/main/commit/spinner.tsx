@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { theme } from "../../../../lib/theme";
 
 const FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
@@ -12,8 +13,8 @@ export function Spinner({ label }: { label: string }) {
 
   return (
     <text>
-      <span fg="#22c55e">{FRAMES[frame]}</span>
-      <span fg="#6b6b6b"> {label}</span>
+      <span fg={theme.accent.cyan}>{FRAMES[frame]}</span>
+      <span fg={theme.text.muted}> {label}</span>
     </text>
   );
 }

@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { useAppStore } from "../../../../store/app-store";
 import { useKeyboardStore } from "../../../../store/keyboard-store";
 import { useCommitFlowStore } from "./store";
+import { theme } from "../../../../lib/theme";
 
 const SCOPE_ID = "edit-message";
 const SUBMIT_KEY_BINDINGS = [{ name: "return", ctrl: true, action: "submit" as const }];
@@ -39,7 +40,7 @@ export function EditMessagePopover() {
 
   return (
     <box flexDirection="column" padding={1}>
-      <box marginBottom={1} paddingX={1} borderStyle="rounded" borderColor="#4a9eff">
+      <box marginBottom={1} paddingX={1} borderStyle="rounded" borderColor={theme.accent.cyan}>
         <textarea
           ref={messageRef}
           initialValue={message ?? ""}
@@ -50,7 +51,7 @@ export function EditMessagePopover() {
           onSubmit={flushAndCommit}
         />
       </box>
-      <text fg="#6b6b6b">Ctrl+Enter to commit, Esc to cancel</text>
+      <text fg={theme.text.muted}>Ctrl+Enter to commit, Esc to cancel</text>
     </box>
   );
 }

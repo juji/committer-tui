@@ -6,7 +6,7 @@ import { BUILTIN_PROVIDERS, type ModelEntry } from "../../lib/provider";
 import { useAppStore } from "../../store/app-store";
 import { useKeyboardStore } from "../../store/keyboard-store";
 import { initConfigFormStore, useConfigFormStore } from "./store";
-
+import { theme } from "../../lib/theme";
 
 const HOME_FIELD_COUNT = 3; // provider select, instruction prefix textarea, instruction suffix textarea
 const SCOPE_ID = "config";
@@ -109,7 +109,7 @@ export function ConfigScreen() {
   return (
     <box flexDirection="column" padding={1}>
       <box marginBottom={1}>
-        <text>Select Provider:</text>
+        <text fg={theme.text.primary} attributes={1}>Select Provider:</text>
       </box>
       <select
         options={providerOptions}
@@ -118,18 +118,18 @@ export function ConfigScreen() {
         showDescription={true}
         itemSpacing={0}
         focused={focusIndex === 0}
-        focusedBackgroundColor="#333333"
+        focusedBackgroundColor={theme.bg.hover}
         onChange={(index) => setHighlightedIndex(index)}
         onSelect={(index) => setProviderId(providerIds[index] ?? null)}
       />
       <box marginTop={1}>
-        <text fg="#6b6b6b">Models are tried top to bottom. Shift+↑↓ to reorder, d to delete.</text>
+        <text fg={theme.text.muted}>Models are tried top to bottom. Shift+↑↓ to reorder, d to delete.</text>
       </box>
 
       <box marginTop={1} marginBottom={1}>
-        <text>Instruction Prefix:</text>
+        <text fg={theme.text.primary} attributes={1}>Instruction Prefix:</text>
       </box>
-      <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 1 ? "#4a9eff" : "#2a2a2a"}>
+      <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 1 ? theme.accent.cyan : theme.bg.borderLight}>
         <textarea
           ref={prefixRef}
           initialValue={instructionPrefix}
@@ -140,14 +140,14 @@ export function ConfigScreen() {
         />
       </box>
 
-      <box marginTop={1} marginBottom={1} paddingX={1} borderStyle="rounded" borderColor="#2a2a2a">
-        <text fg="#8a8a8a">{FENCE_INSTRUCTIONS}</text>
+      <box marginTop={1} marginBottom={1} paddingX={1} borderStyle="rounded" borderColor={theme.bg.borderLight}>
+        <text fg={theme.text.dim}>{FENCE_INSTRUCTIONS}</text>
       </box>
 
       <box marginBottom={1}>
-        <text>Instruction Suffix:</text>
+        <text fg={theme.text.primary} attributes={1}>Instruction Suffix:</text>
       </box>
-      <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 2 ? "#4a9eff" : "#2a2a2a"}>
+      <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 2 ? theme.accent.cyan : theme.bg.borderLight}>
         <textarea
           ref={suffixRef}
           initialValue={instructionSuffix}
@@ -159,7 +159,7 @@ export function ConfigScreen() {
       </box>
 
       <box marginTop={1}>
-        <text fg="#6b6b6b">Tab to navigate, Enter (in textarea: Ctrl+Enter) to save field</text>
+        <text fg={theme.text.muted}>Tab to navigate, Enter (in textarea: Ctrl+Enter) to save field</text>
       </box>
     </box>
   );
@@ -236,16 +236,16 @@ function ProviderDetail({
 
   return (
     <box flexDirection="column" padding={1}>
-      <text attributes={1}>{provider.name}</text>
+      <text fg={theme.accent.cyan} attributes={1}>{provider.name}</text>
 
       {apiKeyIndex >= 0 && (
         <box flexDirection="column" marginTop={1}>
-          <text>API Key</text>
+          <text fg={theme.text.secondary}>API Key</text>
           <input
             value={apiKey}
             placeholder="API key"
             focused={focusIndex === apiKeyIndex}
-            focusedBackgroundColor="#333333"
+            focusedBackgroundColor={theme.bg.hover}
             onChange={setApiKey}
           />
         </box>
@@ -253,24 +253,24 @@ function ProviderDetail({
 
       {baseURLIndex >= 0 && (
         <box flexDirection="column" marginTop={1}>
-          <text>Base URL</text>
+          <text fg={theme.text.secondary}>Base URL</text>
           <input
             value={baseURL}
             placeholder={provider.defaultBaseURL ?? "Base URL"}
             focused={focusIndex === baseURLIndex}
-            focusedBackgroundColor="#333333"
+            focusedBackgroundColor={theme.bg.hover}
             onChange={setBaseURL}
           />
         </box>
       )}
 
       <box flexDirection="column" marginTop={1}>
-        <text>Model{error ? ` (${error})` : ""}</text>
+        <text fg={theme.text.secondary}>Model{error ? ` (${error})` : ""}</text>
         <select
           options={modelOptions}
           height={6}
           focused={focusIndex === modelIndex}
-          focusedBackgroundColor="#333333"
+          focusedBackgroundColor={theme.bg.hover}
           onSelect={(_, option) => {
             if (!option) return;
             onSave({ name: provider.name, provider: providerId as Model["provider"], model: option.name, apiKey, baseURL: baseURL || undefined });
@@ -279,7 +279,7 @@ function ProviderDetail({
       </box>
 
       <box marginTop={1}>
-        <text fg="#6b6b6b">Tab to navigate, Esc to go back</text>
+        <text fg={theme.text.muted}>Tab to navigate, Esc to go back</text>
       </box>
     </box>
   );

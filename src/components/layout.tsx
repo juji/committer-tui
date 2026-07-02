@@ -1,12 +1,10 @@
-import { RGBA } from "@opentui/core";
 import type { ReactNode } from "react";
 import { ConfigScreen } from "./config";
 import { EditMessagePopover } from "./app/main/commit/edit-message";
 import { Toast } from "./toast";
 import { useAppStore } from "../store/app-store";
 import { useAutoCopySelection } from "../lib/clipboard";
-
-const BACKDROP_COLOR = RGBA.fromValues(0, 0, 0, 0.6);
+import { theme } from "../lib/theme";
 
 export function Layout({ children }: { children?: ReactNode }) {
   const config = useAppStore((s) => s.config);
@@ -25,7 +23,7 @@ export function Layout({ children }: { children?: ReactNode }) {
 
   return (
     <box flexDirection="column" flexGrow={1}>
-      <box flexGrow={1} backgroundColor="#000000">
+      <box flexGrow={1} backgroundColor={theme.bg.base}>
         {children}
         {popUpOpen === "config" && (
           <box
@@ -36,10 +34,20 @@ export function Layout({ children }: { children?: ReactNode }) {
             bottom={0}
             alignItems="center"
             justifyContent="center"
-            backgroundColor={BACKDROP_COLOR}
+            backgroundColor={theme.overlay}
             zIndex={10}
           >
-            <scrollbox width="95%" maxWidth={80} maxHeight="95%" borderStyle="rounded" borderColor="#333333" title="Config" titleColor="#ffffff" backgroundColor="#111111" zIndex={11}>
+            <scrollbox
+              width="95%"
+              maxWidth={80}
+              maxHeight="95%"
+              borderStyle="rounded"
+              borderColor={theme.bg.borderLight}
+              title="Config"
+              titleColor={theme.accent.cyan}
+              backgroundColor={theme.bg.elevated}
+              zIndex={11}
+            >
               <ConfigScreen />
             </scrollbox>
           </box>
@@ -53,18 +61,27 @@ export function Layout({ children }: { children?: ReactNode }) {
             bottom={0}
             alignItems="center"
             justifyContent="center"
-            backgroundColor={BACKDROP_COLOR}
+            backgroundColor={theme.overlay}
             zIndex={10}
           >
-            <box width="95%" maxWidth={80} borderStyle="rounded" borderColor="#333333" title="Edit Commit Message" titleColor="#ffffff" backgroundColor="#111111" zIndex={11}>
+            <box
+              width="95%"
+              maxWidth={80}
+              borderStyle="rounded"
+              borderColor={theme.bg.borderLight}
+              title="Edit Commit Message"
+              titleColor={theme.accent.cyan}
+              backgroundColor={theme.bg.elevated}
+              zIndex={11}
+            >
               <EditMessagePopover />
             </box>
           </box>
         )}
         <Toast />
       </box>
-      <box height={1} backgroundColor="#1e1e1e" paddingLeft={1}>
-        <text fg="#6b6b6b">{hints.join("  ·  ")}</text>
+      <box height={1} backgroundColor={theme.bg.surface} paddingLeft={1}>
+        <text fg={theme.text.muted}>{hints.join("  ·  ")}</text>
       </box>
     </box>
   );

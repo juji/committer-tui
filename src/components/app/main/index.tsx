@@ -5,6 +5,7 @@ import { CommitFileList } from "./commit";
 import { useCommitFlowStore } from "./commit/store";
 import { useAppScreenStore } from "../store";
 import { HistoryEntryView } from "./history";
+import { theme } from "../../../lib/theme";
 
 export function Main() {
   const commitFlowActive = useCommitFlowStore((s) => s.active);
@@ -20,7 +21,7 @@ export function Main() {
       flexGrow={1}
       padding={1}
       scrollbarOptions={SCROLLBAR_OPTIONS}
-      backgroundColor={isFocused ? "#0a0a0a" : "#000000"}
+      backgroundColor={isFocused ? theme.bg.surface : theme.bg.base}
       focused={isFocused}
     >
       {viewingCommit && <HistoryEntryView />}

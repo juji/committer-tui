@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useAppScreenStore } from "../store";
 import { useAppStore } from "../../../store/app-store";
 import { useCommitFlowStore } from "../main/commit/store";
+import { theme } from "../../../lib/theme";
 
 const BUTTONS_HEIGHT = 5;
 
@@ -58,7 +59,7 @@ export function Bottom() {
   }, [buttons.length, setBottomButtonCount]);
 
   return (
-    <box id="bottom-area" height={BUTTONS_HEIGHT} flexDirection="row" backgroundColor="#151515" padding={1}>
+    <box id="bottom-area" height={BUTTONS_HEIGHT} flexDirection="row" backgroundColor={theme.bg.card} padding={1}>
       {buttons.map((b, i) => (
         <Button
           key={`${b.label}-${popUpOpen ?? "none"}`}
@@ -95,13 +96,22 @@ function Button({
   onActivate: () => void;
   onClick?: () => void;
 }) {
+  const borderColor = disabled
+    ? theme.bg.border
+    : focused
+      ? theme.accent.cyan
+      : active
+        ? theme.bg.borderLight
+        : theme.bg.border;
+  const textColor = disabled ? theme.text.dim : focused ? theme.accent.cyan : theme.text.secondary;
+
   return (
     <box
       focusable
       focused={focused}
       borderStyle="rounded"
-      borderColor={disabled ? "#2a2a2a" : focused ? "#4a9eff" : active ? "#888888" : "#3a3a3a"}
-      focusedBorderColor={disabled ? "#2a2a2a" : "#4a9eff"}
+      borderColor={borderColor}
+      focusedBorderColor={disabled ? theme.bg.border : theme.accent.cyan}
       paddingLeft={1}
       paddingRight={1}
       marginLeft={marginLeft}
@@ -114,7 +124,7 @@ function Button({
         onActivate();
       }}
     >
-      <text fg={disabled ? "#5a5a5a" : undefined}>{label}</text>
+      <text fg={textColor}>{label}</text>
     </box>
   );
 }

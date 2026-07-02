@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { SCROLLBAR_OPTIONS } from "../../../lib/globals";
 import { useCommitFlowStore } from "../main/commit/store";
 import { useAppScreenStore } from "../store";
+import { theme } from "../../../lib/theme";
 
 const STATUS_WIDTH = 40;
 
@@ -36,16 +37,16 @@ export function Sidebar() {
       id="sidebar-area"
       width={STATUS_WIDTH}
       flexDirection="column"
-      backgroundColor={isFocused ? "#131313" : "#0d0d0d"}
+      backgroundColor={isFocused ? theme.bg.elevated : theme.bg.surface}
     >
-      <box height={3} paddingY={1} paddingX={2} backgroundColor="#151515">
-        <text fg="#6b6b6b">History (↑↓ to select)</text>
+      <box height={3} paddingY={1} paddingX={2} backgroundColor={theme.bg.card}>
+        <text fg={theme.text.muted}>History (↑↓ to select)</text>
       </box>
       <scrollbox
         ref={scrollRef}
         flexGrow={1}
         padding={1}
-        backgroundColor={isFocused ? "#131313" : "#0d0d0d"}
+        backgroundColor={isFocused ? theme.bg.elevated : theme.bg.surface}
         scrollbarOptions={SCROLLBAR_OPTIONS}
         stickyScroll
         stickyStart="top"
@@ -65,10 +66,10 @@ export function Sidebar() {
                 viewHistoryEntry();
               }}
             >
-              <text fg={selected ? "#7d7d7d" : "#4d4d4d"} marginBottom={1}>
+              <text fg={selected ? theme.text.secondary : theme.text.dim} marginBottom={1}>
                 {entry.hash.slice(0, 7)} {new Date(entry.date).toLocaleDateString()}
               </text>
-              <text fg={selected ? "#ffffff" : "#8a8a8a"}>{entry.message}</text>
+              <text fg={selected ? theme.text.primary : theme.text.muted}>{entry.message}</text>
             </box>
           );
         })}
