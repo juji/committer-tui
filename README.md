@@ -8,15 +8,16 @@ diff, generates a conventional commit message, lets you edit it, and commits
 
 ### Option 1: installer (prebuilt binary)
 
-Downloads the latest release binary for your platform (macOS/Linux) to
-`~/.local/bin`:
+Downloads the latest release binary for your platform (macOS, Linux, or
+Windows via Git Bash/MSYS2/Cygwin) to `~/.local/bin`:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/juji/committer-tui/main/install.sh | bash
 ```
 
-Windows: download `committer-windows-x64.exe` from the
-[latest release](https://github.com/juji/committer-tui/releases/latest).
+Supports x64 and arm64. Without a bash shell on Windows, download the
+matching `.exe` from the [latest release](https://github.com/juji/committer-tui/releases/latest)
+directly.
 
 ### Option 2: build from source
 
