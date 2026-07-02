@@ -24,6 +24,7 @@ export function ConfigScreen() {
   const models = useConfigFormStore((s) => s.models);
   const setConventional = useConfigFormStore((s) => s.setConventional);
   const setModel = useConfigFormStore((s) => s.setModel);
+  const removeModel = useConfigFormStore((s) => s.removeModel);
   const closePopUp = useAppStore((s) => s.closePopUp);
 
   useEffect(() => {
@@ -32,6 +33,7 @@ export function ConfigScreen() {
 
   const [providerId, setProviderId] = useState<string | null>(null);
   const [focusIndex, setFocusIndex] = useState<number | null>(0);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   useKeyboard((key) => {
     if (providerId) return; // detail view handles its own tabbing/escape
@@ -39,11 +41,27 @@ export function ConfigScreen() {
       closePopUp();
       return;
     }
+    if (key.name === "d" && focusIndex === 0) {
+      const highlightedProviderId = PROVIDER_IDS[highlightedIndex];
+      if (highlightedProviderId && models.some((m) => m.provider === highlightedProviderId)) {
+        removeModel(highlightedProviderId);
+      }
+      return;
+    }
     if (key.name !== "tab") return;
     setFocusIndex((i) => {
       if (key.shift) return i === null ? HOME_FIELD_COUNT - 1 : i === 0 ? null : i - 1;
       return i === null ? 0 : i === HOME_FIELD_COUNT - 1 ? null : i + 1;
     });
+  });
+
+  const providerOptions: SelectOption[] = PROVIDER_OPTIONS.map((opt, i) => {
+    const model = models.find((m) => m.provider === PROVIDER_IDS[i]);
+    if (!model) return opt;
+    return {
+      ...opt,
+      description: i === highlightedIndex ? `${model.model} - press d to delete` : model.model,
+    };
   });
 
   if (providerId) {
@@ -66,12 +84,13 @@ export function ConfigScreen() {
         <text>Select Provider:</text>
       </box>
       <select
-        options={PROVIDER_OPTIONS}
+        options={providerOptions}
         height={6}
-        showDescription={false}
+        showDescription={true}
         itemSpacing={0}
         focused={focusIndex === 0}
         focusedBackgroundColor="#333333"
+        onChange={(index) => setHighlightedIndex(index)}
         onSelect={(index) => setProviderId(PROVIDER_IDS[index] ?? null)}
       />
 

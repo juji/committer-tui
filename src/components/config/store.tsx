@@ -7,6 +7,7 @@ interface ConfigValues {
   models: Model[];
   setConventional: (conventional: boolean) => void;
   setModel: (providerId: string, model: Model) => void;
+  removeModel: (providerId: string) => void;
 }
 
 export const useConfigFormStore = create<ConfigValues>((set, get) => {
@@ -27,6 +28,9 @@ export const useConfigFormStore = create<ConfigValues>((set, get) => {
     setModel: (providerId, model) => {
       const rest = get().models.filter((m) => m.provider !== providerId);
       persist({ models: [...rest, model] });
+    },
+    removeModel: (providerId) => {
+      persist({ models: get().models.filter((m) => m.provider !== providerId) });
     },
   };
 });
