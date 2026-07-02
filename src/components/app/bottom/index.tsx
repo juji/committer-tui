@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useAppScreenStore } from "../store";
+import { useAppStore } from "../../../store/app-store";
 import { useCommitFlowStore } from "../main/commit/store";
 
 const BUTTONS_HEIGHT = 5;
@@ -25,12 +26,16 @@ export function Bottom() {
   const focusArea = useAppScreenStore((s) => s.focusArea);
   const focusedButtonIndex = useAppScreenStore((s) => s.focusedButtonIndex);
   const setBottomButtonCount = useAppScreenStore((s) => s.setBottomButtonCount);
+  const openPopUp = useAppStore((s) => s.openPopUp);
 
   const buttons: ButtonSpec[] = [];
   if (committing) {
     buttons.push({ label: "Committing...", onActivate: () => {} });
   } else if (committed || hasResult) {
-    if (!committed && hasMessage) buttons.push({ label: "Confirm", onActivate: commit });
+    if (!committed && hasMessage) {
+      buttons.push({ label: "Confirm", onActivate: commit });
+      buttons.push({ label: "Edit", onActivate: () => openPopUp("edit-message") });
+    }
     buttons.push({ label: committed ? "Commit" : "Redo", onActivate: startCommitFlow });
   } else if (commitFlowActive) {
     buttons.push({

@@ -1,6 +1,7 @@
 import { RGBA } from "@opentui/core";
 import type { ReactNode } from "react";
 import { ConfigScreen } from "./config";
+import { EditMessagePopover } from "./app/main/commit/edit-message";
 import { Toast } from "./toast";
 import { useAppStore } from "../store/app-store";
 import { useAutoCopySelection } from "../lib/clipboard";
@@ -41,6 +42,23 @@ export function Layout({ children }: { children?: ReactNode }) {
             <scrollbox width="95%" maxWidth={80} maxHeight="95%" borderStyle="rounded" borderColor="#333333" title="Config" titleColor="#ffffff" backgroundColor="#111111" zIndex={11}>
               <ConfigScreen />
             </scrollbox>
+          </box>
+        )}
+        {popUpOpen === "edit-message" && (
+          <box
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            alignItems="center"
+            justifyContent="center"
+            backgroundColor={BACKDROP_COLOR}
+            zIndex={10}
+          >
+            <box width="95%" maxWidth={80} borderStyle="rounded" borderColor="#333333" title="Edit Commit Message" titleColor="#ffffff" backgroundColor="#111111" zIndex={11}>
+              <EditMessagePopover />
+            </box>
           </box>
         )}
         <Toast />

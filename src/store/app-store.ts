@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { type Config, readConfig, writeConfig } from "../lib/config";
 
 export type Screen = "splash" | "app";
-export type PopUp = "config";
+export type PopUp = "config" | "edit-message";
 
 interface AppState {
   screen: Screen;

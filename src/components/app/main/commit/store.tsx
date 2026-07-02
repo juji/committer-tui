@@ -32,6 +32,7 @@ interface CommitFlowState {
   confirmSelection: () => Promise<void>;
   cancelCommitFlow: () => void;
   commit: () => Promise<void>;
+  setMessage: (message: string) => void;
 }
 
 export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
@@ -145,4 +146,5 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
       set({ committing: false, error: err instanceof Error ? err.message : String(err) });
     }
   },
+  setMessage: (message) => set({ message }),
 }));
