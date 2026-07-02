@@ -2,7 +2,7 @@
 
 A terminal UI for writing git commit messages with AI. Reviews your staged
 diff, generates a conventional commit message, lets you edit it, and commits
-— all from the keyboard.
+— all from the keyboard (some buttons also supports mouse).
 
 > **Note from the creator:** I know editors like VS Code already have this
 > kind of feature built in. I just wanted to build something with
