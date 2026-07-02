@@ -134,37 +134,37 @@ export function ConfigScreen() {
       </box>
 
       {/* Provider selector — index 0 */}
-      <box id="config-provider" marginTop={1} marginBottom={1}>
+      <box id="config-provider" flexDirection="column" marginTop={1} marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Select Provider:</text>
+        <select
+          options={providerOptions}
+          selectedIndex={highlightedIndex}
+          height={6}
+          showDescription={true}
+          itemSpacing={0}
+          focused={focusIndex === 0}
+          focusedBackgroundColor={theme.bg.hover}
+          onChange={(index) => setHighlightedIndex(index)}
+          onSelect={(index) => setProviderId(providerIds[index] ?? null)}
+        />
       </box>
-      <select
-        options={providerOptions}
-        selectedIndex={highlightedIndex}
-        height={6}
-        showDescription={true}
-        itemSpacing={0}
-        focused={focusIndex === 0}
-        focusedBackgroundColor={theme.bg.hover}
-        onChange={(index) => setHighlightedIndex(index)}
-        onSelect={(index) => setProviderId(providerIds[index] ?? null)}
-      />
       <box marginTop={1}>
         <text fg={theme.text.muted}>Models are tried top to bottom. Shift+↑↓ to reorder, d to delete.</text>
       </box>
 
       {/* Instruction Prefix — index 1 */}
-      <box id="config-prefix" marginTop={1} marginBottom={1}>
+      <box id="config-prefix" flexDirection="column" marginTop={1} marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Instruction Prefix:</text>
-      </box>
-      <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 1 ? theme.accent.cyan : theme.bg.borderLight}>
-        <textarea
-          ref={prefixRef}
-          initialValue={instructionPrefix}
-          height={6}
-          backgroundColor="transparent"
-          focused={focusIndex === 1}
-          onSubmit={() => setInstructionPrefix(prefixRef.current?.plainText ?? "")}
-        />
+        <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 1 ? theme.accent.cyan : theme.bg.borderLight}>
+          <textarea
+            ref={prefixRef}
+            initialValue={instructionPrefix}
+            height={6}
+            backgroundColor="transparent"
+            focused={focusIndex === 1}
+            onSubmit={() => setInstructionPrefix(prefixRef.current?.plainText ?? "")}
+          />
+        </box>
       </box>
 
       <box marginTop={1} marginBottom={1} paddingX={1} borderStyle="rounded" borderColor={theme.bg.borderLight}>
@@ -172,38 +172,38 @@ export function ConfigScreen() {
       </box>
 
       {/* Instruction Suffix — index 2 */}
-      <box id="config-suffix" marginBottom={1}>
+      <box id="config-suffix" flexDirection="column" marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Instruction Suffix:</text>
-      </box>
-      <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 2 ? theme.accent.cyan : theme.bg.borderLight}>
-        <textarea
-          ref={suffixRef}
-          initialValue={instructionSuffix}
-          height={6}
-          backgroundColor="transparent"
-          focused={focusIndex === 2}
-          onSubmit={() => setInstructionSuffix(suffixRef.current?.plainText ?? "")}
-        />
+        <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 2 ? theme.accent.cyan : theme.bg.borderLight}>
+          <textarea
+            ref={suffixRef}
+            initialValue={instructionSuffix}
+            height={6}
+            backgroundColor="transparent"
+            focused={focusIndex === 2}
+            onSubmit={() => setInstructionSuffix(suffixRef.current?.plainText ?? "")}
+          />
+        </box>
       </box>
 
       {/* Theme selector — index 3 (bottom) */}
-      <box id="config-theme" marginTop={1} marginBottom={1}>
+      <box id="config-theme" flexDirection="column" marginTop={1} marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Theme:</text>
+        <select
+          options={themeOptions}
+          selectedIndex={themeHighlightedIndex}
+          height={6}
+          showDescription={true}
+          itemSpacing={0}
+          focused={focusIndex === 3}
+          focusedBackgroundColor={theme.bg.hover}
+          onChange={(index) => setThemeHighlightedIndex(index)}
+          onSelect={(index) => {
+            const name = index != null ? themeNames[index] : undefined;
+            if (name) setTheme(name);
+          }}
+        />
       </box>
-      <select
-        options={themeOptions}
-        selectedIndex={themeHighlightedIndex}
-        height={6}
-        showDescription={true}
-        itemSpacing={0}
-        focused={focusIndex === 3}
-        focusedBackgroundColor={theme.bg.hover}
-        onChange={(index) => setThemeHighlightedIndex(index)}
-        onSelect={(index) => {
-          const name = index != null ? themeNames[index] : undefined;
-          if (name) setTheme(name);
-        }}
-      />
 
     </box>
   );
