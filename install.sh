@@ -8,10 +8,15 @@ INSTALL_DIR="${COMMITTER_INSTALL_DIR:-$HOME/.local/bin}"
 os="$(uname -s)"
 arch="$(uname -m)"
 
+exe=""
 case "$os" in
   Darwin) platform="darwin" ;;
   Linux) platform="linux" ;;
-  *) echo "error: unsupported OS: $os (Windows: download committer-windows-x64.exe from https://github.com/$REPO/releases/latest)" >&2; exit 1 ;;
+  MINGW*|MSYS*|CYGWIN*)
+    platform="windows"
+    exe=".exe"
+    ;;
+  *) echo "error: unsupported OS: $os" >&2; exit 1 ;;
 esac
 
 case "$arch" in
@@ -20,11 +25,11 @@ case "$arch" in
   *) echo "error: unsupported architecture: $arch" >&2; exit 1 ;;
 esac
 
-asset="committer-${platform}-${platform_arch}"
+asset="committer-${platform}-${platform_arch}${exe}"
 url="https://github.com/${REPO}/releases/latest/download/${asset}"
 
 mkdir -p "$INSTALL_DIR"
-dest="$INSTALL_DIR/committer"
+dest="$INSTALL_DIR/committer${exe}"
 
 echo "Downloading $asset..."
 curl -fL "$url" -o "$dest"

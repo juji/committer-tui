@@ -21,6 +21,8 @@ jobs:
             asset: committer-linux-x64
           - target: bun-windows-x64
             asset: committer-windows-x64.exe
+          - target: bun-windows-arm64
+            asset: committer-windows-arm64.exe
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
