@@ -45,7 +45,7 @@ export function CommitFileList() {
   const headerHeight = 1 + 1 + 1 + options.length;
 
   return (
-    <box flexDirection="column" flexGrow={1} padding={1}>
+    <>
       {files.length > 0 && (
         <box flexDirection="column" height={headerHeight} flexShrink={0}>
           <box height={1} flexShrink={0} />
@@ -121,6 +121,6 @@ export function CommitFileList() {
           </box>
         </box>
       )}
-    </box>
+    </>
   );
 }

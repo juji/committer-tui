@@ -10,14 +10,6 @@ export function Main() {
   const focusArea = useAppScreenStore((s) => s.focusArea);
   const isFocused = focusArea === "main";
 
-  if (viewingCommit) {
-    return <HistoryEntryView />;
-  }
-
-  if (commitFlowActive) {
-    return <CommitFileList />;
-  }
-
   return (
     <scrollbox
       id="main-area"
@@ -26,6 +18,9 @@ export function Main() {
       scrollbarOptions={SCROLLBAR_OPTIONS}
       backgroundColor={isFocused ? "#0a0a0a" : "#000000"}
       focused={isFocused}
-    />
+    >
+      {viewingCommit && <HistoryEntryView />}
+      {!viewingCommit && commitFlowActive && <CommitFileList />}
+    </scrollbox>
   );
 }

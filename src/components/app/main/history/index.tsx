@@ -17,7 +17,7 @@ export function HistoryEntryView() {
   const messageLines = commit.message.split("\n").length;
 
   return (
-    <box flexDirection="column" flexGrow={1} padding={1}>
+    <>
       <box flexDirection="column" height={2 + messageLines + 2} flexShrink={0}>
         <text fg="#6b6b6b">
           {commit.hash.slice(0, 7)} {new Date(commit.date).toLocaleString()}{" "}
@@ -29,6 +29,6 @@ export function HistoryEntryView() {
       </box>
       <box height={1} flexShrink={0} />
       {diffs && <FileDiffList diffs={diffs} focused={focusArea === "main"} />}
-    </box>
+    </>
   );
 }
