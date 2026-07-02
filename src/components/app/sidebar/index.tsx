@@ -9,6 +9,7 @@ const STATUS_WIDTH = 40;
 export function Sidebar() {
   const log = useAppScreenStore((s) => s.history);
   const loadHistory = useAppScreenStore((s) => s.loadHistory);
+  const loadMoreHistory = useAppScreenStore((s) => s.loadMoreHistory);
   const focusArea = useAppScreenStore((s) => s.focusArea);
   const historyIndex = useAppScreenStore((s) => s.historyIndex);
   const commitFlowActive = useCommitFlowStore((s) => s.active);
@@ -24,6 +25,7 @@ export function Sidebar() {
     if (!isFocused) return;
     const entry = log[historyIndex];
     if (entry) scrollRef.current?.scrollChildIntoView(entry.hash);
+    if (historyIndex >= log.length - 5) loadMoreHistory();
   }, [isFocused, historyIndex, log]);
 
   return (

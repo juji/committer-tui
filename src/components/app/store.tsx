@@ -3,6 +3,7 @@ import { type CommitLogEntry, type FileDiff, getCommitDiff, getCommitLog } from 
 
 export type FocusArea = "bottom" | "history" | "main";
 const FOCUS_ORDER: FocusArea[] = ["bottom", "history", "main"];
+const PAGE_SIZE = 50;
 
 interface AppScreenState {
   sidebarOpen: boolean;
@@ -18,6 +19,9 @@ interface AppScreenState {
 
   history: CommitLogEntry[];
   loadHistory: () => Promise<void>;
+  hasMoreHistory: boolean;
+  loadingMoreHistory: boolean;
+  loadMoreHistory: () => Promise<void>;
 
   historyIndex: number;
   focusHistory: (delta: number) => void;
@@ -55,9 +59,22 @@ export const useAppScreenStore = create<AppScreenState>((set, get) => ({
   setBottomButtonCount: (count) => set({ bottomButtonCount: count }),
 
   history: [],
+  hasMoreHistory: true,
+  loadingMoreHistory: false,
   loadHistory: async () => {
-    const history = await getCommitLog();
-    set({ history });
+    const history = await getCommitLog(PAGE_SIZE);
+    set({ history, hasMoreHistory: history.length === PAGE_SIZE });
+  },
+  loadMoreHistory: async () => {
+    const { history, hasMoreHistory, loadingMoreHistory } = get();
+    if (!hasMoreHistory || loadingMoreHistory) return;
+    set({ loadingMoreHistory: true });
+    const more = await getCommitLog(PAGE_SIZE, history.length);
+    set({
+      history: [...history, ...more],
+      hasMoreHistory: more.length === PAGE_SIZE,
+      loadingMoreHistory: false,
+    });
   },
 
   historyIndex: 0,

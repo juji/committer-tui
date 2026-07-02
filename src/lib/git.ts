@@ -54,9 +54,14 @@ export interface CommitLogEntry {
 const RECORD_SEP = "\x1e";
 const FIELD_SEP = "\x1f";
 
-export async function getCommitLog(limit = 50): Promise<CommitLogEntry[]> {
+export async function getCommitLog(limit = 50, skip = 0): Promise<CommitLogEntry[]> {
   const output = await runGit(
-    ["log", `--max-count=${limit}`, `--pretty=format:%H${FIELD_SEP}%aI${FIELD_SEP}%B${RECORD_SEP}`],
+    [
+      "log",
+      `--max-count=${limit}`,
+      `--skip=${skip}`,
+      `--pretty=format:%H${FIELD_SEP}%aI${FIELD_SEP}%B${RECORD_SEP}`,
+    ],
     [0, 128], // exit 128 when there are no commits yet
   );
   return output
