@@ -78,6 +78,14 @@ You can also override the instructions sent to the model with
 `instructionPrefix` / `instructionSuffix`, either from the config screen or
 directly in the JSON file.
 
+### Privacy
+
+API keys are stored only in your local `config.json` and sent only to the
+provider you configured for that model, directly from your machine — never
+to any server we run. Your diff is sent only to the model provider you pick,
+solely to generate the commit message; nothing is logged or transmitted
+anywhere else.
+
 ## Releasing
 
 Pushing a `v*` tag triggers CI to cross-compile binaries for macOS, Linux,
