@@ -2,8 +2,8 @@ import { generateText } from 'ai'
 import type { Model } from './config.js'
 import { BUILTIN_PROVIDERS } from './provider.js'
 
-const START_RE = /`{5}commit-message/
-const END_RE = /`{5}/
+const START_RE = /`{3}commit-message/
+const END_RE = /`{3}/
 
 export async function generateCommitMessage(diff: string, model: Model, conventional: boolean): Promise<string> {
   const p = BUILTIN_PROVIDERS[model.provider]
