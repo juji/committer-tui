@@ -10,12 +10,14 @@ const SUBMIT_KEY_BINDINGS = [{ name: "return", ctrl: true, action: "submit" as c
 export function EditMessagePopover() {
   const message = useCommitFlowStore((s) => s.message);
   const setMessage = useCommitFlowStore((s) => s.setMessage);
+  const commit = useCommitFlowStore((s) => s.commit);
   const closePopUp = useAppStore((s) => s.closePopUp);
   const messageRef = useRef<TextareaRenderable>(null);
 
-  const flushAndClose = () => {
+  const flushAndCommit = () => {
     setMessage(messageRef.current?.plainText ?? message ?? "");
     closePopUp();
+    commit();
   };
 
   const stateRef = useRef({ closePopUp });
@@ -45,10 +47,10 @@ export function EditMessagePopover() {
           backgroundColor="transparent"
           focused
           keyBindings={SUBMIT_KEY_BINDINGS}
-          onSubmit={flushAndClose}
+          onSubmit={flushAndCommit}
         />
       </box>
-      <text fg="#6b6b6b">Ctrl+Enter to save and close, Esc to cancel</text>
+      <text fg="#6b6b6b">Ctrl+Enter to commit, Esc to cancel</text>
     </box>
   );
 }
