@@ -7,6 +7,7 @@ const BUTTONS_HEIGHT = 5;
 interface ButtonSpec {
   label: string;
   active?: boolean;
+  disabled?: boolean;
   onActivate: () => void;
 }
 
@@ -32,7 +33,11 @@ export function Bottom() {
     if (!committed && hasMessage) buttons.push({ label: "Confirm", onActivate: commit });
     buttons.push({ label: committed ? "Commit" : "Redo", onActivate: startCommitFlow });
   } else if (commitFlowActive) {
-    buttons.push({ label: generating ? "Generating..." : "Generate", onActivate: confirmSelection });
+    buttons.push({
+      label: generating ? "Generating..." : "Generate",
+      disabled: generating,
+      onActivate: generating ? () => {} : confirmSelection,
+    });
   } else {
     buttons.push({ label: "Commit", onActivate: startCommitFlow });
   }
@@ -51,6 +56,7 @@ export function Bottom() {
           key={b.label}
           label={b.label}
           active={b.active}
+          disabled={b.disabled}
           focused={isFocused && i === safeIndex}
           marginLeft={i > 0 ? 1 : 0}
           onActivate={b.onActivate}
@@ -63,12 +69,14 @@ export function Bottom() {
 function Button({
   label,
   active,
+  disabled,
   focused,
   marginLeft,
   onActivate,
 }: {
   label: string;
   active?: boolean;
+  disabled?: boolean;
   focused?: boolean;
   marginLeft?: number;
   onActivate: () => void;
@@ -78,7 +86,7 @@ function Button({
       focusable
       focused={focused}
       borderStyle="rounded"
-      borderColor={focused ? "#4a9eff" : active ? "#888888" : "#3a3a3a"}
+      borderColor={disabled ? "#2a2a2a" : focused ? "#4a9eff" : active ? "#888888" : "#3a3a3a"}
       paddingLeft={1}
       paddingRight={1}
       marginLeft={marginLeft}
@@ -86,7 +94,7 @@ function Button({
         if (key.name === "return") onActivate();
       }}
     >
-      <text>{label}</text>
+      <text fg={disabled ? "#5a5a5a" : undefined}>{label}</text>
     </box>
   );
 }
