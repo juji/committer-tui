@@ -9,6 +9,8 @@ diff, generates a conventional commit message, lets you edit it, and commits
 > [OpenTUI](https://opentui.com) — it seemed like a great fit for
 > this.
 
+---
+
 ![committer screenshot](asset/image.png)
 
 ## Install
