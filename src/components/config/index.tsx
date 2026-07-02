@@ -7,11 +7,6 @@ import { useAppStore } from "../../store/app-store";
 import { useKeyboardStore } from "../../store/keyboard-store";
 import { initConfigFormStore, useConfigFormStore } from "./store";
 
-const PROVIDER_OPTIONS: SelectOption[] = Object.values(BUILTIN_PROVIDERS).map((p) => ({
-  name: p.name,
-  description: "",
-}));
-const PROVIDER_IDS = Object.keys(BUILTIN_PROVIDERS);
 
 const HOME_FIELD_COUNT = 3; // provider select, instruction prefix textarea, instruction suffix textarea
 const SCOPE_ID = "config";
@@ -25,6 +20,7 @@ export function ConfigScreen() {
   const setInstructionSuffix = useConfigFormStore((s) => s.setInstructionSuffix);
   const setModel = useConfigFormStore((s) => s.setModel);
   const removeModel = useConfigFormStore((s) => s.removeModel);
+  const moveModel = useConfigFormStore((s) => s.moveModel);
   const closePopUp = useAppStore((s) => s.closePopUp);
   const prefixRef = useRef<TextareaRenderable>(null);
   const suffixRef = useRef<TextareaRenderable>(null);
@@ -37,13 +33,17 @@ export function ConfigScreen() {
   const [focusIndex, setFocusIndex] = useState<number | null>(0);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
 
+  const configuredIds = models.map((m) => m.provider);
+  const unconfiguredIds = Object.keys(BUILTIN_PROVIDERS).filter((id) => !configuredIds.includes(id as Model["provider"]));
+  const providerIds = [...configuredIds, ...unconfiguredIds];
+
   const flushTextareas = () => {
     setInstructionPrefix(prefixRef.current?.plainText ?? "");
     setInstructionSuffix(suffixRef.current?.plainText ?? "");
   };
 
-  const stateRef = useRef({ focusIndex, highlightedIndex, models, closePopUp, removeModel });
-  stateRef.current = { focusIndex, highlightedIndex, models, closePopUp, removeModel };
+  const stateRef = useRef({ focusIndex, highlightedIndex, models, providerIds, closePopUp, removeModel, moveModel });
+  stateRef.current = { focusIndex, highlightedIndex, models, providerIds, closePopUp, removeModel, moveModel };
 
   useEffect(() => {
     useKeyboardStore.getState().push({
@@ -56,9 +56,17 @@ export function ConfigScreen() {
           return true;
         }
         if (key.name === "d" && s.focusIndex === 0) {
-          const highlightedProviderId = PROVIDER_IDS[s.highlightedIndex];
+          const highlightedProviderId = s.providerIds[s.highlightedIndex];
           if (highlightedProviderId && s.models.some((m) => m.provider === highlightedProviderId)) {
             s.removeModel(highlightedProviderId);
+          }
+          return true;
+        }
+        if (key.shift && s.focusIndex === 0 && (key.name === "up" || key.name === "down")) {
+          const highlightedProviderId = s.providerIds[s.highlightedIndex];
+          if (highlightedProviderId) {
+            s.moveModel(highlightedProviderId, key.name === "up" ? -1 : 1);
+            setHighlightedIndex((i) => (key.name === "up" ? Math.max(0, i - 1) : Math.min(s.providerIds.length - 1, i + 1)));
           }
           return true;
         }
@@ -74,11 +82,12 @@ export function ConfigScreen() {
     return () => useKeyboardStore.getState().pop(SCOPE_ID);
   }, []);
 
-  const providerOptions: SelectOption[] = PROVIDER_OPTIONS.map((opt, i) => {
-    const model = models.find((m) => m.provider === PROVIDER_IDS[i]);
-    if (!model) return opt;
+  const providerOptions: SelectOption[] = providerIds.map((id, i) => {
+    const provider = BUILTIN_PROVIDERS[id]!;
+    const model = models.find((m) => m.provider === id);
+    if (!model) return { name: provider.name, description: "" };
     return {
-      ...opt,
+      name: provider.name,
       description: i === highlightedIndex ? `${model.model} - press d to delete` : model.model,
     };
   });
@@ -104,14 +113,18 @@ export function ConfigScreen() {
       </box>
       <select
         options={providerOptions}
+        selectedIndex={highlightedIndex}
         height={6}
         showDescription={true}
         itemSpacing={0}
         focused={focusIndex === 0}
         focusedBackgroundColor="#333333"
         onChange={(index) => setHighlightedIndex(index)}
-        onSelect={(index) => setProviderId(PROVIDER_IDS[index] ?? null)}
+        onSelect={(index) => setProviderId(providerIds[index] ?? null)}
       />
+      <box marginTop={1}>
+        <text fg="#6b6b6b">Models are tried top to bottom. Shift+↑↓ to reorder, d to delete.</text>
+      </box>
 
       <box marginTop={1} marginBottom={1}>
         <text>Instruction Prefix:</text>

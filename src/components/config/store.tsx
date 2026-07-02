@@ -10,6 +10,7 @@ interface ConfigValues {
   setInstructionSuffix: (instructionSuffix: string) => void;
   setModel: (providerId: string, model: Model) => void;
   removeModel: (providerId: string) => void;
+  moveModel: (providerId: string, delta: number) => void;
 }
 
 export const useConfigFormStore = create<ConfigValues>((set, get) => {
@@ -37,6 +38,15 @@ export const useConfigFormStore = create<ConfigValues>((set, get) => {
     },
     removeModel: (providerId) => {
       persist({ models: get().models.filter((m) => m.provider !== providerId) });
+    },
+    moveModel: (providerId, delta) => {
+      const models = get().models;
+      const i = models.findIndex((m) => m.provider === providerId);
+      const j = i + delta;
+      if (i === -1 || j < 0 || j >= models.length) return;
+      const next = [...models];
+      [next[i], next[j]] = [next[j]!, next[i]!];
+      persist({ models: next });
     },
   };
 });
