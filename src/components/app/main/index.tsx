@@ -1,3 +1,5 @@
+import type { ScrollBoxRenderable } from "@opentui/core";
+import { useRef } from "react";
 import { SCROLLBAR_OPTIONS } from "../../../lib/globals";
 import { CommitFileList } from "./commit";
 import { useCommitFlowStore } from "./commit/store";
@@ -9,10 +11,12 @@ export function Main() {
   const viewingCommit = useAppScreenStore((s) => s.viewingCommit);
   const focusArea = useAppScreenStore((s) => s.focusArea);
   const isFocused = focusArea === "main";
+  const scrollRef = useRef<ScrollBoxRenderable>(null);
 
   return (
     <scrollbox
       id="main-area"
+      ref={scrollRef}
       flexGrow={1}
       padding={1}
       scrollbarOptions={SCROLLBAR_OPTIONS}
@@ -20,7 +24,7 @@ export function Main() {
       focused={isFocused}
     >
       {viewingCommit && <HistoryEntryView />}
-      {!viewingCommit && commitFlowActive && <CommitFileList />}
+      {!viewingCommit && commitFlowActive && <CommitFileList scrollRef={scrollRef} />}
     </scrollbox>
   );
 }

@@ -1,12 +1,12 @@
-import type { SelectOption } from "@opentui/core";
+import type { ScrollBoxRenderable, SelectOption } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
-import { useState } from "react";
+import { type RefObject, useEffect, useState } from "react";
 import { FileDiffList } from "../../file-diff-list";
 import { useAppScreenStore } from "../../store";
 import { Spinner } from "./spinner";
 import { useCommitFlowStore } from "./store";
 
-export function CommitFileList() {
+export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRenderable | null> }) {
   const files = useCommitFlowStore((s) => s.files);
   const diffs = useCommitFlowStore((s) => s.diffs);
   const generating = useCommitFlowStore((s) => s.generating);
@@ -36,6 +36,11 @@ export function CommitFileList() {
       if (file) toggleFileExcluded(file.path);
     }
   });
+
+  useEffect(() => {
+    if (!message) return;
+    scrollRef.current?.scrollTo({ x: 0, y: scrollRef.current.scrollHeight });
+  }, [message, scrollRef]);
 
   const options: SelectOption[] = files.map((f) => ({
     name: `[${f.excluded ? " " : "x"}] ${f.status} ${f.path}`,
