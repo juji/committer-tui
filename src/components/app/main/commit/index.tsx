@@ -1,8 +1,8 @@
 import type { SelectOption } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
 import { useState } from "react";
-import { FileDiffList } from "../file-diff-list";
-import { useAppScreenStore } from "../store";
+import { FileDiffList } from "../../file-diff-list";
+import { useAppScreenStore } from "../../store";
 import { Spinner } from "./spinner";
 import { useCommitFlowStore } from "./store";
 

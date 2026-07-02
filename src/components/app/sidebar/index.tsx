@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { SCROLLBAR_OPTIONS } from "../../../lib/globals";
-import { useCommitFlowStore } from "../commit/store";
+import { useCommitFlowStore } from "../main/commit/store";
 import { useAppScreenStore } from "../store";
 
 const STATUS_WIDTH = 40;

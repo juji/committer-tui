@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import { type ChangedFile, type FileDiff, getChangedFiles, getDiffs, runGitStreaming } from "../../../lib/git";
-import { generateCommitMessage } from "../../../lib/generate";
-import { useAppStore } from "../../../store/app-store";
-import { useAppScreenStore } from "../store";
+import { type ChangedFile, type FileDiff, getChangedFiles, getDiffs, runGitStreaming } from "../../../../lib/git";
+import { generateCommitMessage } from "../../../../lib/generate";
+import { useAppStore } from "../../../../store/app-store";
+import { useAppScreenStore } from "../../store";
 
 interface CommitFile extends ChangedFile {
   excluded: boolean;

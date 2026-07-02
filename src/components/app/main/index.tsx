@@ -1,8 +1,8 @@
 import { SCROLLBAR_OPTIONS } from "../../../lib/globals";
-import { CommitFileList } from "../commit";
-import { useCommitFlowStore } from "../commit/store";
+import { CommitFileList } from "./commit";
+import { useCommitFlowStore } from "./commit/store";
 import { useAppScreenStore } from "../store";
-import { HistoryEntryView } from "./history-entry";
+import { HistoryEntryView } from "./history";
 
 export function Main() {
   const commitFlowActive = useCommitFlowStore((s) => s.active);

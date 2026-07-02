@@ -1,6 +1,6 @@
 import { useKeyboard } from "@opentui/react";
-import { FileDiffList } from "../file-diff-list";
-import { useAppScreenStore } from "../store";
+import { FileDiffList } from "../../file-diff-list";
+import { useAppScreenStore } from "../../store";
 
 export function HistoryEntryView() {
   const commit = useAppScreenStore((s) => s.viewingCommit);

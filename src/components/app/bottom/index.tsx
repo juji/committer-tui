@@ -1,7 +1,7 @@
 import { useKeyboard } from "@opentui/react";
 import { useEffect } from "react";
 import { useAppScreenStore } from "../store";
-import { useCommitFlowStore } from "../commit/store";
+import { useCommitFlowStore } from "../main/commit/store";
 
 const BUTTONS_HEIGHT = 5;
 
