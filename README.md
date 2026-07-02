@@ -88,6 +88,15 @@ git tag v0.1.0
 git push --tags
 ```
 
+For a pre-release (beta, rc, etc.), use a tag with a hyphen suffix — CI
+marks it as a GitHub pre-release automatically, so `install.sh` (which
+downloads from `releases/latest`) skips it until you promote a stable tag:
+
+```bash
+git tag v0.2.0-beta.1
+git push --tags
+```
+
 ## Development
 
 ```bash
