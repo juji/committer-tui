@@ -1,6 +1,24 @@
 import type { Model } from './config.js'
+import { info, error } from 'localog'
 
 export type ModelEntry = { id: string }
+
+const CHECK_TIMEOUT_MS = 30000
+
+async function withTimeout<T>(fn: () => Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    return await fn()
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error(errorMessage)
+    }
+    throw err
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
 
 export class Provider {
   constructor(
@@ -22,7 +40,52 @@ export class Provider {
     return (body.data || []).map((m: any) => ({ id: m.id }))
   }
 
+  async checkApiKey(m: Model): Promise<boolean> {
+    // Default implementation: try to list models
+    const providerName = this.id;
+    try {
+      info(`checkApiKey ${providerName}: calling listModels`)
+      await withTimeout(() => this.listModels(m.apiKey, m.baseURL), CHECK_TIMEOUT_MS, 'API key check timed out')
+      info(`checkApiKey ${providerName}: success`)
+      return true
+    } catch (e) {
+      error(`checkApiKey ${providerName}: failed - ${e}`)
+      return false
+    }
+  }
+
   async createModel(m: Model) {
+    const { createOpenAI } = await import('@ai-sdk/openai')
+    return createOpenAI({ apiKey: m.apiKey, baseURL: m.baseURL || this.defaultBaseURL }).chat(m.model)
+  }
+}
+
+export class RequestyProvider extends Provider {
+  constructor() {
+    super('requesty', 'Requesty', 'https://router.requesty.ai/v1')
+  }
+
+  override async checkApiKey(m: Model): Promise<boolean> {
+    // Requesty returns 200 even with invalid API key, so we need to actually try to generate text
+    try {
+      const result = await withTimeout(
+        async () => {
+          const { generateText } = await import('ai')
+          const { createOpenAI } = await import('@ai-sdk/openai')
+          const model = createOpenAI({ apiKey: m.apiKey, baseURL: m.baseURL || this.defaultBaseURL }).chat(m.model)
+          const { text } = await generateText({ model, prompt: 'hi' })
+          return text.length > 0
+        },
+        CHECK_TIMEOUT_MS,
+        'API key check timed out',
+      )
+      return result
+    } catch {
+      return false
+    }
+  }
+
+  override async createModel(m: Model) {
     const { createOpenAI } = await import('@ai-sdk/openai')
     return createOpenAI({ apiKey: m.apiKey, baseURL: m.baseURL || this.defaultBaseURL }).chat(m.model)
   }
@@ -71,7 +134,7 @@ export const BUILTIN_PROVIDERS: Record<string, Provider> = {
   gemini: new GeminiProvider(),
   groq: new Provider('groq', 'Groq', 'https://api.groq.com/openai/v1'),
   cerebras: new Provider('cerebras', 'Cerebras', 'https://api.cerebras.ai/v1'),
-  requesty: new Provider('requesty', 'Requesty', 'https://router.requesty.ai/v1'),
+  requesty: new RequestyProvider(),
   openrouter: new Provider('openrouter', 'OpenRouter', 'https://openrouter.ai/api/v1'),
   ollama: new OllamaProvider(),
 }

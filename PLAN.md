@@ -50,3 +50,45 @@ layout grows past this.
    commit flow
 4. Manual verification: stage/unstage real files in this repo, commit, undo
    via `git reset` if needed
+
+---
+
+# API Key Validation on Splash Screen
+
+## Requirements
+
+When the app starts, validate API keys before entering the main screen.
+
+## Cases
+
+### No config file
+- Open config popup automatically
+- Proceed to app screen
+
+### All API keys failed validation
+- Open config popup automatically
+- Proceed to app screen
+
+### Some API keys failed (partial)
+- Show splash screen with:
+  - Message indicating which providers failed
+  - [Config] button - opens config popup
+  - [Ignore] button - continues to app without fixing
+
+### All API keys valid
+- Proceed directly to app screen
+
+## Implementation
+
+### Provider.checkApiKey()
+- Default implementation: calls `listModels()` to validate
+- Timeout: 30 seconds per provider
+- Requesty special case: uses `generateText()` with "hi" prompt since Requesty returns HTTP 200 even with invalid keys
+
+### State Management
+- `apiValidationStatus`: "idle" | "validating" | "valid" | "partial" | "failed"
+- `invalidProviders`: array of provider IDs that failed validation
+
+### Modified Files
+- `src/lib/provider.ts` — Added `checkApiKey()` method and `RequestyProvider` class
+- `src/store/app-store.ts` — Added validation state and `checkApiKeys()` method
