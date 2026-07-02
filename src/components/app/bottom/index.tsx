@@ -27,6 +27,7 @@ export function Bottom() {
   const focusedButtonIndex = useAppScreenStore((s) => s.focusedButtonIndex);
   const setBottomButtonCount = useAppScreenStore((s) => s.setBottomButtonCount);
   const openPopUp = useAppStore((s) => s.openPopUp);
+  const popUpOpen = useAppStore((s) => s.popUpOpen);
 
   const buttons: ButtonSpec[] = [];
   if (committing) {
@@ -58,7 +59,7 @@ export function Bottom() {
     <box id="bottom-area" height={BUTTONS_HEIGHT} flexDirection="row" backgroundColor="#151515" padding={1}>
       {buttons.map((b, i) => (
         <Button
-          key={b.label}
+          key={`${b.label}-${popUpOpen ?? "none"}`}
           label={b.label}
           active={b.active}
           disabled={b.disabled}
