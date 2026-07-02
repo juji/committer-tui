@@ -87,6 +87,7 @@ function Button({
       focused={focused}
       borderStyle="rounded"
       borderColor={disabled ? "#2a2a2a" : focused ? "#4a9eff" : active ? "#888888" : "#3a3a3a"}
+      focusedBorderColor={disabled ? "#2a2a2a" : "#4a9eff"}
       paddingLeft={1}
       paddingRight={1}
       marginLeft={marginLeft}
