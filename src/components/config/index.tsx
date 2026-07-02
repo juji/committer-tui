@@ -7,6 +7,7 @@ import { useAppStore } from "../../store/app-store";
 import { useKeyboardStore } from "../../store/keyboard-store";
 import { useThemeStore } from "../../store/theme-store";
 import { themeNames } from "../../lib/themes";
+import { scrollConfigTo } from "../../lib/globals";
 import { initConfigFormStore, useConfigFormStore } from "./store";
 
 // Tab order: 0=provider, 1=prefix, 2=suffix, 3=theme
@@ -119,10 +120,21 @@ export function ConfigScreen() {
     );
   }
 
+  // Scroll the config popup to show the focused section
+  useEffect(() => {
+    if (focusIndex === null) return;
+    const ids = ["config-provider", "config-prefix", "config-suffix", "config-theme"];
+    scrollConfigTo(ids[focusIndex]!);
+  }, [focusIndex]);
+
   return (
     <box flexDirection="column" padding={1}>
+      <box marginBottom={1}>
+        <text fg={theme.text.muted}>Tab to navigate, Enter (in textarea: Ctrl+Enter) to save field</text>
+      </box>
+
       {/* Provider selector — index 0 */}
-      <box marginTop={1} marginBottom={1}>
+      <box id="config-provider" marginTop={1} marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Select Provider:</text>
       </box>
       <select
@@ -141,7 +153,7 @@ export function ConfigScreen() {
       </box>
 
       {/* Instruction Prefix — index 1 */}
-      <box marginTop={1} marginBottom={1}>
+      <box id="config-prefix" marginTop={1} marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Instruction Prefix:</text>
       </box>
       <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 1 ? theme.accent.cyan : theme.bg.borderLight}>
@@ -160,7 +172,7 @@ export function ConfigScreen() {
       </box>
 
       {/* Instruction Suffix — index 2 */}
-      <box marginBottom={1}>
+      <box id="config-suffix" marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Instruction Suffix:</text>
       </box>
       <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 2 ? theme.accent.cyan : theme.bg.borderLight}>
@@ -175,7 +187,7 @@ export function ConfigScreen() {
       </box>
 
       {/* Theme selector — index 3 (bottom) */}
-      <box marginTop={1} marginBottom={1}>
+      <box id="config-theme" marginTop={1} marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Theme:</text>
       </box>
       <select
@@ -193,9 +205,6 @@ export function ConfigScreen() {
         }}
       />
 
-      <box marginTop={1}>
-        <text fg={theme.text.muted}>Tab to navigate, Enter (in textarea: Ctrl+Enter) to save field</text>
-      </box>
     </box>
   );
 }

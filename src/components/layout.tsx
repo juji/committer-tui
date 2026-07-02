@@ -1,11 +1,13 @@
-import { RGBA } from "@opentui/core";
+import { RGBA, type ScrollBoxRenderable } from "@opentui/core";
 import type { ReactNode } from "react";
+import { useRef } from "react";
 import { ConfigScreen } from "./config";
 import { EditMessagePopover } from "./app/main/commit/edit-message";
 import { Toast } from "./toast";
 import { useAppStore } from "../store/app-store";
 import { useAutoCopySelection } from "../lib/clipboard";
 import { useThemeStore } from "../store/theme-store";
+import { setConfigScrollRef } from "../lib/globals";
 
 const OVERLAY_COLOR = RGBA.fromValues(0, 0, 0, 0.7);
 
@@ -14,8 +16,12 @@ export function Layout({ children }: { children?: ReactNode }) {
   const config = useAppStore((s) => s.config);
   const popUpOpen = useAppStore((s) => s.popUpOpen);
   const screen = useAppStore((s) => s.screen);
+  const configScrollRef = useRef<ScrollBoxRenderable>(null);
 
   useAutoCopySelection();
+
+  // Expose the config scroll ref so ConfigScreen can scroll on focus change
+  setConfigScrollRef(configScrollRef);
 
   const hints = ["ctrl+c exit"];
   if (!popUpOpen) {
@@ -42,6 +48,7 @@ export function Layout({ children }: { children?: ReactNode }) {
             zIndex={10}
           >
             <scrollbox
+              ref={configScrollRef}
               width="95%"
               maxWidth={80}
               maxHeight="95%"
