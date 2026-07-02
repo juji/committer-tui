@@ -71,7 +71,7 @@ export const BUILTIN_PROVIDERS: Record<string, Provider> = {
   gemini: new GeminiProvider(),
   groq: new Provider('groq', 'Groq', 'https://api.groq.com/openai/v1'),
   cerebras: new Provider('cerebras', 'Cerebras', 'https://api.cerebras.ai/v1'),
-  requesty: new Provider('requesty', 'Requesty', 'https://api.requesty.ai/v1'),
+  requesty: new Provider('requesty', 'Requesty', 'https://router.requesty.ai/v1'),
   openrouter: new Provider('openrouter', 'OpenRouter', 'https://openrouter.ai/api/v1'),
   ollama: new OllamaProvider(),
 }
