@@ -47,6 +47,7 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
   committed: false,
   startCommitFlow: async () => {
     useAppScreenStore.getState().closeHistoryEntry();
+    useAppScreenStore.setState({ focusArea: "main" });
     const changedFiles = await getChangedFiles();
     set({
       active: true,

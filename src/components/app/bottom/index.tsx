@@ -1,4 +1,3 @@
-import { useKeyboard } from "@opentui/react";
 import { useEffect } from "react";
 import { useAppScreenStore } from "../store";
 import { useCommitFlowStore } from "../main/commit/store";
@@ -45,13 +44,6 @@ export function Bottom() {
     setBottomButtonCount(buttons.length);
   }, [buttons.length, setBottomButtonCount]);
 
-  useKeyboard((key) => {
-    if (!isFocused) return;
-    if (key.name === "return") {
-      buttons[safeIndex]?.onActivate();
-    }
-  });
-
   return (
     <box id="bottom-area" height={BUTTONS_HEIGHT} flexDirection="row" backgroundColor="#151515" padding={1}>
       {buttons.map((b, i) => (
@@ -61,6 +53,7 @@ export function Bottom() {
           active={b.active}
           focused={isFocused && i === safeIndex}
           marginLeft={i > 0 ? 1 : 0}
+          onActivate={b.onActivate}
         />
       ))}
     </box>
@@ -72,19 +65,26 @@ function Button({
   active,
   focused,
   marginLeft,
+  onActivate,
 }: {
   label: string;
   active?: boolean;
   focused?: boolean;
   marginLeft?: number;
+  onActivate: () => void;
 }) {
   return (
     <box
+      focusable
+      focused={focused}
       borderStyle="rounded"
       borderColor={focused ? "#4a9eff" : active ? "#888888" : "#3a3a3a"}
       paddingLeft={1}
       paddingRight={1}
       marginLeft={marginLeft}
+      onKeyDown={(key) => {
+        if (key.name === "return") onActivate();
+      }}
     >
       <text>{label}</text>
     </box>

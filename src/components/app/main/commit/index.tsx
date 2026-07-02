@@ -1,10 +1,13 @@
-import type { ScrollBoxRenderable, SelectOption } from "@opentui/core";
-import { useKeyboard } from "@opentui/react";
-import { type RefObject, useEffect, useState } from "react";
+import type { KeyEvent, ScrollBoxRenderable, SelectOption, SelectRenderable } from "@opentui/core";
+import { useAppContext } from "@opentui/react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import { FileDiffList } from "../../file-diff-list";
 import { useAppScreenStore } from "../../store";
+import { useKeyboardStore } from "../../../../store/keyboard-store";
 import { Spinner } from "./spinner";
 import { useCommitFlowStore } from "./store";
+
+const SCOPE_ID = "app/commit";
 
 export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRenderable | null> }) {
   const files = useCommitFlowStore((s) => s.files);
@@ -16,26 +19,75 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
   const committing = useCommitFlowStore((s) => s.committing);
   const commitOutput = useCommitFlowStore((s) => s.commitOutput);
   const committed = useCommitFlowStore((s) => s.committed);
+  const hasResult = message !== null || error !== null || files.length === 0;
   const toggleFileExcluded = useCommitFlowStore((s) => s.toggleFileExcluded);
   const cancelCommitFlow = useCommitFlowStore((s) => s.cancelCommitFlow);
   const focusArea = useAppScreenStore((s) => s.focusArea);
+  const toggleSidebar = useAppScreenStore((s) => s.toggleSidebar);
+  const cycleFocusArea = useAppScreenStore((s) => s.cycleFocusArea);
 
   const [focusedIndex, setFocusedIndex] = useState(0);
 
-  const hasResult = message !== null || error !== null || files.length === 0;
   const isFocused = focusArea === "main";
+  const selectRef = useRef<SelectRenderable>(null);
 
-  useKeyboard((key) => {
-    if (key.name === "escape") {
-      cancelCommitFlow();
-      return;
-    }
-    if (!isFocused || committing || committed || hasResult) return;
-    if (key.name === "space") {
-      const file = files[focusedIndex];
-      if (file) toggleFileExcluded(file.path);
-    }
+  useEffect(() => {
+    if (isFocused && !diffs) selectRef.current?.focus();
+  }, [isFocused, diffs]);
+
+  const { keyHandler } = useAppContext();
+  const stateRef = useRef({
+    files,
+    focusedIndex,
+    committing,
+    committed,
+    hasResult,
+    toggleFileExcluded,
+    cancelCommitFlow,
+    toggleSidebar,
+    cycleFocusArea,
   });
+  stateRef.current = {
+    files,
+    focusedIndex,
+    committing,
+    committed,
+    hasResult,
+    toggleFileExcluded,
+    cancelCommitFlow,
+    toggleSidebar,
+    cycleFocusArea,
+  };
+
+  useEffect(() => {
+    const onKey = (key: KeyEvent) => {
+      const s = stateRef.current;
+      if (key.ctrl && key.name === "y") {
+        s.toggleSidebar();
+        return;
+      }
+      if (key.name === "tab") {
+        s.cycleFocusArea();
+        return;
+      }
+      if (key.name === "escape") {
+        s.cancelCommitFlow();
+        return;
+      }
+      if (s.committing || s.committed || s.hasResult) return;
+      if (key.name === "space") {
+        const file = s.files[s.focusedIndex];
+        if (file) s.toggleFileExcluded(file.path);
+      }
+    };
+
+    useKeyboardStore.getState().push({
+      id: SCOPE_ID,
+      activate: () => keyHandler?.on("keypress", onKey),
+      deactivate: () => keyHandler?.off("keypress", onKey),
+    });
+    return () => useKeyboardStore.getState().pop();
+  }, [keyHandler]);
 
   useEffect(() => {
     if (!message && !committed) return;
@@ -60,6 +112,7 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
           <text fg="#6b6b6b">Space to exclude, Enter to confirm, Esc to cancel</text>
           <box height={1} flexShrink={0} />
           <select
+            ref={selectRef}
             options={options}
             height={options.length}
             showDescription={false}
