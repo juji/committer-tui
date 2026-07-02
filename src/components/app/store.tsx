@@ -13,6 +13,8 @@ interface AppScreenState {
 
   focusedButtonIndex: number;
   setFocusedButtonIndex: (index: number) => void;
+  bottomButtonCount: number;
+  setBottomButtonCount: (count: number) => void;
 
   history: CommitLogEntry[];
   loadHistory: () => Promise<void>;
@@ -32,13 +34,24 @@ export const useAppScreenStore = create<AppScreenState>((set, get) => ({
 
   focusArea: "bottom",
   cycleFocusArea: () => {
-    const nextIndex = (FOCUS_ORDER.indexOf(get().focusArea) + 1) % FOCUS_ORDER.length;
+    const { focusArea, focusedButtonIndex, bottomButtonCount } = get();
+    if (focusArea === "bottom" && focusedButtonIndex < bottomButtonCount - 1) {
+      set({ focusedButtonIndex: focusedButtonIndex + 1 });
+      return;
+    }
+    const nextIndex = (FOCUS_ORDER.indexOf(focusArea) + 1) % FOCUS_ORDER.length;
     const next = FOCUS_ORDER[nextIndex]!;
-    set({ focusArea: next, sidebarOpen: next === "history" ? true : get().sidebarOpen });
+    set({
+      focusArea: next,
+      sidebarOpen: next === "history" ? true : get().sidebarOpen,
+      focusedButtonIndex: next === "bottom" ? 0 : focusedButtonIndex,
+    });
   },
 
   focusedButtonIndex: 0,
   setFocusedButtonIndex: (index) => set({ focusedButtonIndex: index }),
+  bottomButtonCount: 1,
+  setBottomButtonCount: (count) => set({ bottomButtonCount: count }),
 
   history: [],
   loadHistory: async () => {

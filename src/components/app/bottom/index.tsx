@@ -1,4 +1,5 @@
 import { useKeyboard } from "@opentui/react";
+import { useEffect } from "react";
 import { useAppScreenStore } from "../store";
 import { useCommitFlowStore } from "../commit/store";
 
@@ -23,14 +24,14 @@ export function Bottom() {
 
   const focusArea = useAppScreenStore((s) => s.focusArea);
   const focusedButtonIndex = useAppScreenStore((s) => s.focusedButtonIndex);
-  const setFocusedButtonIndex = useAppScreenStore((s) => s.setFocusedButtonIndex);
+  const setBottomButtonCount = useAppScreenStore((s) => s.setBottomButtonCount);
 
   const buttons: ButtonSpec[] = [];
   if (committing) {
     buttons.push({ label: "Committing...", onActivate: () => {} });
   } else if (committed || hasResult) {
     if (!committed && hasMessage) buttons.push({ label: "Confirm", onActivate: commit });
-    buttons.push({ label: "Commit", onActivate: startCommitFlow });
+    buttons.push({ label: committed ? "Commit" : "Redo", onActivate: startCommitFlow });
   } else if (commitFlowActive) {
     buttons.push({ label: generating ? "Generating..." : "Generate", onActivate: confirmSelection });
   } else {
@@ -40,13 +41,12 @@ export function Bottom() {
   const isFocused = focusArea === "bottom";
   const safeIndex = focusedButtonIndex % buttons.length;
 
+  useEffect(() => {
+    setBottomButtonCount(buttons.length);
+  }, [buttons.length, setBottomButtonCount]);
+
   useKeyboard((key) => {
     if (!isFocused) return;
-    if (key.name === "left" || key.name === "right") {
-      const delta = key.name === "left" ? -1 : 1;
-      setFocusedButtonIndex((safeIndex + delta + buttons.length) % buttons.length);
-      return;
-    }
     if (key.name === "return") {
       buttons[safeIndex]?.onActivate();
     }

@@ -90,6 +90,7 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
           error: null,
           modelAttempts: s.modelAttempts.map((a) => (a === attempt ? { ...a, status: "ok" } : a)),
         }));
+        useAppScreenStore.getState().setFocusedButtonIndex(0);
         return;
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : String(err);
