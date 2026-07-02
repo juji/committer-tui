@@ -56,7 +56,7 @@ const FIELD_SEP = "\x1f";
 
 export async function getCommitLog(limit = 50): Promise<CommitLogEntry[]> {
   const output = await runGit(
-    ["log", `--max-count=${limit}`, `--pretty=format:%H${FIELD_SEP}%aI${FIELD_SEP}%s${RECORD_SEP}`],
+    ["log", `--max-count=${limit}`, `--pretty=format:%H${FIELD_SEP}%aI${FIELD_SEP}%B${RECORD_SEP}`],
     [0, 128], // exit 128 when there are no commits yet
   );
   return output
@@ -64,8 +64,8 @@ export async function getCommitLog(limit = 50): Promise<CommitLogEntry[]> {
     .map((record) => record.trim())
     .filter(Boolean)
     .map((record) => {
-      const [hash, date, message] = record.split(FIELD_SEP);
-      return { hash: hash ?? "", date: date ?? "", message: message ?? "" };
+      const [hash, date, ...rest] = record.split(FIELD_SEP);
+      return { hash: hash ?? "", date: date ?? "", message: rest.join(FIELD_SEP).trim() };
     });
 }
 
