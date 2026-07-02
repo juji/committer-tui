@@ -68,6 +68,8 @@ export function Splash() {
         if (key.name === "return") {
           if (focusedButton === "config") {
             openPopUp("config");
+          } else if (focusedButton === "ignore") {
+            setScreen("app");
           }
           return true;
         }
