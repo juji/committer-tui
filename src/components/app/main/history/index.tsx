@@ -1,5 +1,3 @@
-import type { KeyEvent } from "@opentui/core";
-import { useAppContext } from "@opentui/react";
 import { useEffect, useRef } from "react";
 import { FileDiffList } from "../../file-diff-list";
 import { useAppScreenStore } from "../../store";
@@ -12,46 +10,34 @@ export function HistoryEntryView() {
   const diffs = useAppScreenStore((s) => s.viewingDiff);
   const closeHistoryEntry = useAppScreenStore((s) => s.closeHistoryEntry);
   const focusArea = useAppScreenStore((s) => s.focusArea);
-  const toggleSidebar = useAppScreenStore((s) => s.toggleSidebar);
-  const cycleFocusArea = useAppScreenStore((s) => s.cycleFocusArea);
   const viewHistoryDelta = useAppScreenStore((s) => s.viewHistoryDelta);
 
-  const { keyHandler } = useAppContext();
-  const stateRef = useRef({ closeHistoryEntry, toggleSidebar, cycleFocusArea, viewHistoryDelta, focusArea });
-  stateRef.current = { closeHistoryEntry, toggleSidebar, cycleFocusArea, viewHistoryDelta, focusArea };
+  const stateRef = useRef({ closeHistoryEntry, viewHistoryDelta, focusArea });
+  stateRef.current = { closeHistoryEntry, viewHistoryDelta, focusArea };
 
   useEffect(() => {
-    const onKey = (key: KeyEvent) => {
-      const s = stateRef.current;
-      if (key.name === "escape") {
-        s.closeHistoryEntry();
-        return;
-      }
-      if (key.ctrl && key.name === "y") {
-        s.toggleSidebar();
-        return;
-      }
-      if (key.name === "tab") {
-        s.cycleFocusArea();
-        return;
-      }
-      if (s.focusArea !== "history") return;
-      if (key.name === "up") {
-        s.viewHistoryDelta(-1);
-        return;
-      }
-      if (key.name === "down") {
-        s.viewHistoryDelta(1);
-      }
-    };
-
     useKeyboardStore.getState().push({
       id: SCOPE_ID,
-      activate: () => keyHandler?.on("keypress", onKey),
-      deactivate: () => keyHandler?.off("keypress", onKey),
+      handleKey: (key) => {
+        const s = stateRef.current;
+        if (key.name === "escape") {
+          s.closeHistoryEntry();
+          return true;
+        }
+        if (s.focusArea !== "history") return false;
+        if (key.name === "up") {
+          s.viewHistoryDelta(-1);
+          return true;
+        }
+        if (key.name === "down") {
+          s.viewHistoryDelta(1);
+          return true;
+        }
+        return false;
+      },
     });
-    return () => useKeyboardStore.getState().pop();
-  }, [keyHandler]);
+    return () => useKeyboardStore.getState().pop(SCOPE_ID);
+  }, []);
 
   if (!commit) return null;
 

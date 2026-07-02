@@ -1,34 +1,39 @@
+import type { KeyEvent } from "@opentui/core";
 import { create } from "zustand";
 
 export interface KeyboardScope {
   id: string;
-  activate?: () => void;
-  deactivate?: () => void;
+  handleKey: (key: KeyEvent) => boolean | void;
 }
 
 interface KeyboardState {
   stack: KeyboardScope[];
   push: (scope: KeyboardScope) => void;
-  pop: () => void;
+  pop: (id: string) => void;
+  dispatch: (key: KeyEvent) => void;
 }
 
 export const useKeyboardStore = create<KeyboardState>((set, get) => ({
   stack: [],
 
   push: (scope) => {
-    const { stack } = get();
-    stack.at(-1)?.deactivate?.();
-    set({ stack: [...stack, scope] });
-    scope.activate?.();
+    set({ stack: [...get().stack, scope] });
   },
 
-  pop: () => {
+  pop: (id) => {
+    set({ stack: get().stack.filter((s) => s.id !== id) });
+  },
+
+  dispatch: (key) => {
     const { stack } = get();
-    const removed = stack.at(-1);
-    if (!removed) return;
-    removed.deactivate?.();
-    const next = stack.slice(0, -1);
-    set({ stack: next });
-    next.at(-1)?.activate?.();
+    const topId = stack.at(-1)?.id;
+    if (!topId) return;
+
+    const segments = topId.split("/");
+    for (let i = segments.length; i > 0; i--) {
+      const id = segments.slice(0, i).join("/");
+      const scope = stack.find((s) => s.id === id);
+      if (scope?.handleKey(key)) return;
+    }
   },
 }));

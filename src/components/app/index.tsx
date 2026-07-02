@@ -1,5 +1,4 @@
-import type { KeyEvent } from "@opentui/core";
-import { useAppContext, useTerminalDimensions } from "@opentui/react";
+import { useTerminalDimensions } from "@opentui/react";
 import { useEffect, useRef } from "react";
 import { Bottom } from "./bottom";
 import { Main } from "./main";
@@ -20,42 +19,40 @@ export function AppScreen() {
   const viewHistoryEntry = useAppScreenStore((s) => s.viewHistoryEntry);
   const showStatus = width >= STATUS_MIN_WIDTH;
 
-  const { keyHandler } = useAppContext();
   const stateRef = useRef({ focusArea, toggleSidebar, cycleFocusArea, focusHistory, viewHistoryEntry });
   stateRef.current = { focusArea, toggleSidebar, cycleFocusArea, focusHistory, viewHistoryEntry };
 
   useEffect(() => {
-    const onKey = (key: KeyEvent) => {
-      const s = stateRef.current;
-      if (key.ctrl && key.name === "y") {
-        s.toggleSidebar();
-        return;
-      }
-      if (key.name === "tab") {
-        s.cycleFocusArea();
-        return;
-      }
-      if (s.focusArea !== "history") return;
-      if (key.name === "up") {
-        s.focusHistory(-1);
-        return;
-      }
-      if (key.name === "down") {
-        s.focusHistory(1);
-        return;
-      }
-      if (key.name === "return") {
-        s.viewHistoryEntry();
-      }
-    };
-
     useKeyboardStore.getState().push({
       id: SCOPE_ID,
-      activate: () => keyHandler?.on("keypress", onKey),
-      deactivate: () => keyHandler?.off("keypress", onKey),
+      handleKey: (key) => {
+        const s = stateRef.current;
+        if (key.ctrl && key.name === "y") {
+          s.toggleSidebar();
+          return true;
+        }
+        if (key.name === "tab") {
+          s.cycleFocusArea();
+          return true;
+        }
+        if (s.focusArea !== "history") return false;
+        if (key.name === "up") {
+          s.focusHistory(-1);
+          return true;
+        }
+        if (key.name === "down") {
+          s.focusHistory(1);
+          return true;
+        }
+        if (key.name === "return") {
+          s.viewHistoryEntry();
+          return true;
+        }
+        return false;
+      },
     });
-    return () => useKeyboardStore.getState().pop();
-  }, [keyHandler]);
+    return () => useKeyboardStore.getState().pop(SCOPE_ID);
+  }, []);
 
   return (
     <box flexDirection="row" flexGrow={1}>

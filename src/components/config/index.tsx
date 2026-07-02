@@ -1,5 +1,4 @@
-import type { KeyEvent, SelectOption, TextareaRenderable } from "@opentui/core";
-import { useAppContext } from "@opentui/react";
+import type { SelectOption, TextareaRenderable } from "@opentui/core";
 import { useEffect, useRef, useState } from "react";
 import type { Model } from "../../lib/config";
 import { FENCE_INSTRUCTIONS } from "../../lib/generate";
@@ -43,41 +42,37 @@ export function ConfigScreen() {
     setInstructionSuffix(suffixRef.current?.plainText ?? "");
   };
 
-  const { keyHandler } = useAppContext();
-  const stateRef = useRef({ providerId, focusIndex, highlightedIndex, models, closePopUp, removeModel });
-  stateRef.current = { providerId, focusIndex, highlightedIndex, models, closePopUp, removeModel };
+  const stateRef = useRef({ focusIndex, highlightedIndex, models, closePopUp, removeModel });
+  stateRef.current = { focusIndex, highlightedIndex, models, closePopUp, removeModel };
 
   useEffect(() => {
-    const onKey = (key: KeyEvent) => {
-      const s = stateRef.current;
-      if (s.providerId) return; // detail view handles its own tabbing/escape
-      if (key.name === "escape") {
-        flushTextareas();
-        s.closePopUp();
-        return;
-      }
-      if (key.name === "d" && s.focusIndex === 0) {
-        const highlightedProviderId = PROVIDER_IDS[s.highlightedIndex];
-        if (highlightedProviderId && s.models.some((m) => m.provider === highlightedProviderId)) {
-          s.removeModel(highlightedProviderId);
-        }
-        return;
-      }
-      if (key.name !== "tab") return;
-      flushTextareas();
-      setFocusIndex((i) => {
-        if (key.shift) return i === null ? HOME_FIELD_COUNT - 1 : i === 0 ? null : i - 1;
-        return i === null ? 0 : i === HOME_FIELD_COUNT - 1 ? null : i + 1;
-      });
-    };
-
     useKeyboardStore.getState().push({
       id: SCOPE_ID,
-      activate: () => keyHandler?.on("keypress", onKey),
-      deactivate: () => keyHandler?.off("keypress", onKey),
+      handleKey: (key) => {
+        const s = stateRef.current;
+        if (key.name === "escape") {
+          flushTextareas();
+          s.closePopUp();
+          return true;
+        }
+        if (key.name === "d" && s.focusIndex === 0) {
+          const highlightedProviderId = PROVIDER_IDS[s.highlightedIndex];
+          if (highlightedProviderId && s.models.some((m) => m.provider === highlightedProviderId)) {
+            s.removeModel(highlightedProviderId);
+          }
+          return true;
+        }
+        if (key.name !== "tab") return false;
+        flushTextareas();
+        setFocusIndex((i) => {
+          if (key.shift) return i === null ? HOME_FIELD_COUNT - 1 : i === 0 ? null : i - 1;
+          return i === null ? 0 : i === HOME_FIELD_COUNT - 1 ? null : i + 1;
+        });
+        return true;
+      },
     });
-    return () => useKeyboardStore.getState().pop();
-  }, [keyHandler]);
+    return () => useKeyboardStore.getState().pop(SCOPE_ID);
+  }, []);
 
   const providerOptions: SelectOption[] = PROVIDER_OPTIONS.map((opt, i) => {
     const model = models.find((m) => m.provider === PROVIDER_IDS[i]);
@@ -177,32 +172,31 @@ function ProviderDetail({
 
   const fieldCount = (provider.needsApiKey === false ? 0 : 1) + (provider.needsBaseURL ? 1 : 0) + 1;
 
-  const { keyHandler } = useAppContext();
   const stateRef = useRef({ onBack, fieldCount });
   stateRef.current = { onBack, fieldCount };
 
   useEffect(() => {
-    const onKey = (key: KeyEvent) => {
-      const s = stateRef.current;
-      if (key.name === "escape") {
-        s.onBack();
-        return;
-      }
-      if (key.name === "tab") {
-        setFocusIndex((i) => {
-          if (key.shift) return (i - 1 + s.fieldCount) % s.fieldCount;
-          return (i + 1) % s.fieldCount;
-        });
-      }
-    };
-
+    const id = "config/provider-detail";
     useKeyboardStore.getState().push({
-      id: "config/provider-detail",
-      activate: () => keyHandler?.on("keypress", onKey),
-      deactivate: () => keyHandler?.off("keypress", onKey),
+      id,
+      handleKey: (key) => {
+        const s = stateRef.current;
+        if (key.name === "escape") {
+          s.onBack();
+          return true;
+        }
+        if (key.name === "tab") {
+          setFocusIndex((i) => {
+            if (key.shift) return (i - 1 + s.fieldCount) % s.fieldCount;
+            return (i + 1) % s.fieldCount;
+          });
+          return true;
+        }
+        return false;
+      },
     });
-    return () => useKeyboardStore.getState().pop();
-  }, [keyHandler]);
+    return () => useKeyboardStore.getState().pop(id);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
