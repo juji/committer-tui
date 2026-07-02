@@ -39,7 +39,10 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
 
   useEffect(() => {
     if (!message && !committed) return;
-    scrollRef.current?.scrollTo({ x: 0, y: scrollRef.current.scrollHeight });
+    const id = setTimeout(() => {
+      scrollRef.current?.scrollTo({ x: 0, y: scrollRef.current.scrollHeight });
+    }, 0);
+    return () => clearTimeout(id);
   }, [message, committed, scrollRef]);
 
   const options: SelectOption[] = files.map((f) => ({
