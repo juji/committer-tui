@@ -24,7 +24,7 @@ export class Provider {
 
   async createModel(m: Model) {
     const { createOpenAI } = await import('@ai-sdk/openai')
-    return createOpenAI({ apiKey: m.apiKey, baseURL: m.baseURL || this.defaultBaseURL })(m.model)
+    return createOpenAI({ apiKey: m.apiKey, baseURL: m.baseURL || this.defaultBaseURL }).chat(m.model)
   }
 }
 
