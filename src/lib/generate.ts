@@ -15,7 +15,7 @@ export async function generateCommitMessage(diff: string, model: Model, conventi
 
   const { text } = await generateText({
     model: await p.createModel(model),
-    system: `${formatInstructions}\n\nWrap the commit message, and only the commit message, in a fenced block like this:\n\n\`\`\`\`\`commit-message\nthe message\n\`\`\`\`\`\n\nDo not include any other commentary, explanation, or preamble outside that block.`,
+    system: `${formatInstructions}\n\nWrap the commit message, and only the commit message, in a fenced block like this:\n\n\`\`\`commit-message\nthe message\n\`\`\`\n\nDo not include any other commentary, explanation, or preamble outside that block.`,
     prompt: `Git diff:\n\n${diff}`,
   })
 
