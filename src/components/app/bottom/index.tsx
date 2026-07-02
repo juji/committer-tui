@@ -24,7 +24,9 @@ export function Bottom() {
   const commit = useCommitFlowStore((s) => s.commit);
 
   const focusArea = useAppScreenStore((s) => s.focusArea);
+  const setFocusArea = useAppScreenStore((s) => s.setFocusArea);
   const focusedButtonIndex = useAppScreenStore((s) => s.focusedButtonIndex);
+  const setFocusedButtonIndex = useAppScreenStore((s) => s.setFocusedButtonIndex);
   const setBottomButtonCount = useAppScreenStore((s) => s.setBottomButtonCount);
   const openPopUp = useAppStore((s) => s.openPopUp);
   const popUpOpen = useAppStore((s) => s.popUpOpen);
@@ -66,6 +68,10 @@ export function Bottom() {
           focused={isFocused && i === safeIndex}
           marginLeft={i > 0 ? 1 : 0}
           onActivate={b.onActivate}
+          onClick={() => {
+            setFocusArea("bottom");
+            setFocusedButtonIndex(i);
+          }}
         />
       ))}
     </box>
@@ -79,6 +85,7 @@ function Button({
   focused,
   marginLeft,
   onActivate,
+  onClick,
 }: {
   label: string;
   active?: boolean;
@@ -86,6 +93,7 @@ function Button({
   focused?: boolean;
   marginLeft?: number;
   onActivate: () => void;
+  onClick?: () => void;
 }) {
   return (
     <box
@@ -99,6 +107,11 @@ function Button({
       marginLeft={marginLeft}
       onKeyDown={(key) => {
         if (key.name === "return") onActivate();
+      }}
+      onMouseDown={() => {
+        if (disabled) return;
+        onClick?.();
+        onActivate();
       }}
     >
       <text fg={disabled ? "#5a5a5a" : undefined}>{label}</text>

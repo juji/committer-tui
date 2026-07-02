@@ -11,7 +11,10 @@ export function Sidebar() {
   const loadHistory = useAppScreenStore((s) => s.loadHistory);
   const loadMoreHistory = useAppScreenStore((s) => s.loadMoreHistory);
   const focusArea = useAppScreenStore((s) => s.focusArea);
+  const setFocusArea = useAppScreenStore((s) => s.setFocusArea);
   const historyIndex = useAppScreenStore((s) => s.historyIndex);
+  const setHistoryIndex = useAppScreenStore((s) => s.setHistoryIndex);
+  const viewHistoryEntry = useAppScreenStore((s) => s.viewHistoryEntry);
   const commitFlowActive = useCommitFlowStore((s) => s.active);
 
   const isFocused = focusArea === "history";
@@ -56,6 +59,11 @@ export function Sidebar() {
               flexDirection="column"
               paddingX={1}
               marginBottom={i < log.length - 1 ? 1 : 0}
+              onMouseDown={() => {
+                setFocusArea("history");
+                setHistoryIndex(i);
+                viewHistoryEntry();
+              }}
             >
               <text fg={selected ? "#7d7d7d" : "#4d4d4d"} marginBottom={1}>
                 {entry.hash.slice(0, 7)} {new Date(entry.date).toLocaleDateString()}

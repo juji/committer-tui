@@ -10,6 +10,7 @@ interface AppScreenState {
   toggleSidebar: () => void;
 
   focusArea: FocusArea;
+  setFocusArea: (area: FocusArea) => void;
   cycleFocusArea: (delta?: number) => void;
 
   focusedButtonIndex: number;
@@ -24,6 +25,7 @@ interface AppScreenState {
   loadMoreHistory: () => Promise<void>;
 
   historyIndex: number;
+  setHistoryIndex: (index: number) => void;
   focusHistory: (delta: number) => void;
 
   viewingCommit: CommitLogEntry | null;
@@ -38,6 +40,7 @@ export const useAppScreenStore = create<AppScreenState>((set, get) => ({
   toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
 
   focusArea: "bottom",
+  setFocusArea: (area) => set({ focusArea: area, sidebarOpen: area === "history" ? true : get().sidebarOpen }),
   cycleFocusArea: (delta = 1) => {
     const { focusArea, focusedButtonIndex, bottomButtonCount } = get();
     if (focusArea === "bottom") {
@@ -81,6 +84,7 @@ export const useAppScreenStore = create<AppScreenState>((set, get) => ({
   },
 
   historyIndex: 0,
+  setHistoryIndex: (index) => set({ historyIndex: index }),
   focusHistory: (delta) => {
     const itemCount = get().history.length;
     if (itemCount === 0) return;
