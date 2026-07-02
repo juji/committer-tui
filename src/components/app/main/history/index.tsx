@@ -2,11 +2,12 @@ import { useEffect, useRef } from "react";
 import { FileDiffList } from "../../file-diff-list";
 import { useAppScreenStore } from "../../store";
 import { useKeyboardStore } from "../../../../store/keyboard-store";
-import { theme } from "../../../../lib/theme";
+import { useThemeStore } from "../../../../store/theme-store";
 
 const SCOPE_ID = "app/history";
 
 export function HistoryEntryView() {
+  const theme = useThemeStore((s) => s.theme);
   const commit = useAppScreenStore((s) => s.viewingCommit);
   const diffs = useAppScreenStore((s) => s.viewingDiff);
   const closeHistoryEntry = useAppScreenStore((s) => s.closeHistoryEntry);

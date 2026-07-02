@@ -1,12 +1,16 @@
+import { RGBA } from "@opentui/core";
 import type { ReactNode } from "react";
 import { ConfigScreen } from "./config";
 import { EditMessagePopover } from "./app/main/commit/edit-message";
 import { Toast } from "./toast";
 import { useAppStore } from "../store/app-store";
 import { useAutoCopySelection } from "../lib/clipboard";
-import { theme } from "../lib/theme";
+import { useThemeStore } from "../store/theme-store";
+
+const OVERLAY_COLOR = RGBA.fromValues(0, 0, 0, 0.7);
 
 export function Layout({ children }: { children?: ReactNode }) {
+  const theme = useThemeStore((s) => s.theme);
   const config = useAppStore((s) => s.config);
   const popUpOpen = useAppStore((s) => s.popUpOpen);
   const screen = useAppStore((s) => s.screen);
@@ -34,7 +38,7 @@ export function Layout({ children }: { children?: ReactNode }) {
             bottom={0}
             alignItems="center"
             justifyContent="center"
-            backgroundColor={theme.overlay}
+            backgroundColor={OVERLAY_COLOR}
             zIndex={10}
           >
             <scrollbox
@@ -61,7 +65,7 @@ export function Layout({ children }: { children?: ReactNode }) {
             bottom={0}
             alignItems="center"
             justifyContent="center"
-            backgroundColor={theme.overlay}
+            backgroundColor={OVERLAY_COLOR}
             zIndex={10}
           >
             <box

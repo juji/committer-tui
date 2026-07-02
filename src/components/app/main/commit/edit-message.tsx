@@ -3,12 +3,13 @@ import { useEffect, useRef } from "react";
 import { useAppStore } from "../../../../store/app-store";
 import { useKeyboardStore } from "../../../../store/keyboard-store";
 import { useCommitFlowStore } from "./store";
-import { theme } from "../../../../lib/theme";
+import { useThemeStore } from "../../../../store/theme-store";
 
 const SCOPE_ID = "edit-message";
 const SUBMIT_KEY_BINDINGS = [{ name: "return", ctrl: true, action: "submit" as const }];
 
 export function EditMessagePopover() {
+  const theme = useThemeStore((s) => s.theme);
   const message = useCommitFlowStore((s) => s.message);
   const setMessage = useCommitFlowStore((s) => s.setMessage);
   const commit = useCommitFlowStore((s) => s.commit);

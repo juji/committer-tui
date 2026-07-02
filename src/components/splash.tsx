@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useAppStore } from "../store/app-store";
-import { theme } from "../lib/theme";
+import { useThemeStore } from "../store/theme-store";
 
 export function Splash() {
+  const theme = useThemeStore((s) => s.theme);
   const loadConfig = useAppStore((s) => s.loadConfig);
 
   useEffect(() => {

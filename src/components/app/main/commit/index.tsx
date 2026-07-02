@@ -5,11 +5,12 @@ import { useAppScreenStore } from "../../store";
 import { useKeyboardStore } from "../../../../store/keyboard-store";
 import { Spinner } from "./spinner";
 import { useCommitFlowStore } from "./store";
-import { theme } from "../../../../lib/theme";
+import { useThemeStore } from "../../../../store/theme-store";
 
 const SCOPE_ID = "app/commit";
 
 export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRenderable | null> }) {
+  const theme = useThemeStore((s) => s.theme);
   const files = useCommitFlowStore((s) => s.files);
   const diffs = useCommitFlowStore((s) => s.diffs);
   const generating = useCommitFlowStore((s) => s.generating);

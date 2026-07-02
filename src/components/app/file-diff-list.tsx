@@ -1,7 +1,8 @@
 import type { FileDiff } from "../../lib/git";
-import { theme } from "../../lib/theme";
+import { useThemeStore } from "../../store/theme-store";
 
 export function FileDiffList({ diffs, focused }: { diffs: FileDiff[]; focused: boolean }) {
+  const theme = useThemeStore((s) => s.theme);
   return (
     <scrollbox
       maxHeight={20}

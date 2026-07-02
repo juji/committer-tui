@@ -1,7 +1,8 @@
 import { useToastStore } from "../store/toast-store";
-import { theme } from "../lib/theme";
+import { useThemeStore } from "../store/theme-store";
 
 export function Toast() {
+  const theme = useThemeStore((s) => s.theme);
   const message = useToastStore((s) => s.message);
 
   if (!message) return null;

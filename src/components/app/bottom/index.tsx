@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useAppScreenStore } from "../store";
 import { useAppStore } from "../../../store/app-store";
 import { useCommitFlowStore } from "../main/commit/store";
-import { theme } from "../../../lib/theme";
+import { useThemeStore } from "../../../store/theme-store";
 
 const BUTTONS_HEIGHT = 5;
 
@@ -14,6 +14,7 @@ interface ButtonSpec {
 }
 
 export function Bottom() {
+  const theme = useThemeStore((s) => s.theme);
   const commitFlowActive = useCommitFlowStore((s) => s.active);
   const startCommitFlow = useCommitFlowStore((s) => s.startCommitFlow);
   const hasMessage = useCommitFlowStore((s) => s.message !== null);
@@ -96,6 +97,7 @@ function Button({
   onActivate: () => void;
   onClick?: () => void;
 }) {
+  const theme = useThemeStore.getState().theme;
   const borderColor = disabled
     ? theme.bg.border
     : focused

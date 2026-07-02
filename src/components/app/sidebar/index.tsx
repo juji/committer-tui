@@ -1,13 +1,14 @@
 import type { ScrollBoxRenderable } from "@opentui/core";
 import { useEffect, useRef } from "react";
-import { SCROLLBAR_OPTIONS } from "../../../lib/globals";
+import { getScrollbarOptions } from "../../../lib/globals";
 import { useCommitFlowStore } from "../main/commit/store";
 import { useAppScreenStore } from "../store";
-import { theme } from "../../../lib/theme";
+import { useThemeStore } from "../../../store/theme-store";
 
 const STATUS_WIDTH = 40;
 
 export function Sidebar() {
+  const theme = useThemeStore((s) => s.theme);
   const log = useAppScreenStore((s) => s.history);
   const loadHistory = useAppScreenStore((s) => s.loadHistory);
   const loadMoreHistory = useAppScreenStore((s) => s.loadMoreHistory);
@@ -47,7 +48,7 @@ export function Sidebar() {
         flexGrow={1}
         padding={1}
         backgroundColor={isFocused ? theme.bg.elevated : theme.bg.surface}
-        scrollbarOptions={SCROLLBAR_OPTIONS}
+        scrollbarOptions={getScrollbarOptions()}
         stickyScroll
         stickyStart="top"
       >

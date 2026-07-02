@@ -5,7 +5,6 @@ import { Main } from "./main";
 import { Sidebar } from "./sidebar";
 import { useAppScreenStore } from "./store";
 import { useKeyboardStore } from "../../store/keyboard-store";
-import { theme } from "../../lib/theme";
 
 const STATUS_MIN_WIDTH = 100;
 const SCOPE_ID = "app";

@@ -1,5 +1,8 @@
-import { theme } from "./theme";
+import { useThemeStore } from "../store/theme-store";
 
-export const SCROLLBAR_OPTIONS = {
-  trackOptions: { backgroundColor: theme.scrollbar.track, foregroundColor: theme.scrollbar.thumb },
-};
+export function getScrollbarOptions() {
+  const theme = useThemeStore.getState().theme;
+  return {
+    trackOptions: { backgroundColor: theme.scrollbar.track, foregroundColor: theme.scrollbar.thumb },
+  };
+}

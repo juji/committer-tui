@@ -5,13 +5,18 @@ import { FENCE_INSTRUCTIONS } from "../../lib/generate";
 import { BUILTIN_PROVIDERS, type ModelEntry } from "../../lib/provider";
 import { useAppStore } from "../../store/app-store";
 import { useKeyboardStore } from "../../store/keyboard-store";
+import { useThemeStore } from "../../store/theme-store";
+import { themeNames } from "../../lib/themes";
 import { initConfigFormStore, useConfigFormStore } from "./store";
-import { theme } from "../../lib/theme";
 
-const HOME_FIELD_COUNT = 3; // provider select, instruction prefix textarea, instruction suffix textarea
+// Tab order: 0=provider, 1=prefix, 2=suffix, 3=theme
+const HOME_FIELD_COUNT = 4;
 const SCOPE_ID = "config";
 
 export function ConfigScreen() {
+  const theme = useThemeStore((s) => s.theme);
+  const themeName = useThemeStore((s) => s.themeName);
+  const setTheme = useThemeStore((s) => s.setTheme);
   const config = useAppStore((s) => s.config);
   const models = useConfigFormStore((s) => s.models);
   const instructionPrefix = useConfigFormStore((s) => s.instructionPrefix);
@@ -32,6 +37,9 @@ export function ConfigScreen() {
   const [providerId, setProviderId] = useState<string | null>(null);
   const [focusIndex, setFocusIndex] = useState<number | null>(0);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const [themeHighlightedIndex, setThemeHighlightedIndex] = useState(
+    Math.max(0, themeNames.indexOf(themeName))
+  );
 
   const configuredIds = models.map((m) => m.provider);
   const unconfiguredIds = Object.keys(BUILTIN_PROVIDERS).filter((id) => !configuredIds.includes(id as Model["provider"]));
@@ -92,6 +100,11 @@ export function ConfigScreen() {
     };
   });
 
+  const themeOptions: SelectOption[] = themeNames.map((name) => ({
+    name: name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+    description: name === themeName ? "active" : "",
+  }));
+
   if (providerId) {
     return (
       <ProviderDetail
@@ -108,7 +121,8 @@ export function ConfigScreen() {
 
   return (
     <box flexDirection="column" padding={1}>
-      <box marginBottom={1}>
+      {/* Provider selector — index 0 */}
+      <box marginTop={1} marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Select Provider:</text>
       </box>
       <select
@@ -126,6 +140,7 @@ export function ConfigScreen() {
         <text fg={theme.text.muted}>Models are tried top to bottom. Shift+↑↓ to reorder, d to delete.</text>
       </box>
 
+      {/* Instruction Prefix — index 1 */}
       <box marginTop={1} marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Instruction Prefix:</text>
       </box>
@@ -144,6 +159,7 @@ export function ConfigScreen() {
         <text fg={theme.text.dim}>{FENCE_INSTRUCTIONS}</text>
       </box>
 
+      {/* Instruction Suffix — index 2 */}
       <box marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Instruction Suffix:</text>
       </box>
@@ -157,6 +173,25 @@ export function ConfigScreen() {
           onSubmit={() => setInstructionSuffix(suffixRef.current?.plainText ?? "")}
         />
       </box>
+
+      {/* Theme selector — index 3 (bottom) */}
+      <box marginTop={1} marginBottom={1}>
+        <text fg={theme.text.primary} attributes={1}>Theme:</text>
+      </box>
+      <select
+        options={themeOptions}
+        selectedIndex={themeHighlightedIndex}
+        height={6}
+        showDescription={true}
+        itemSpacing={0}
+        focused={focusIndex === 3}
+        focusedBackgroundColor={theme.bg.hover}
+        onChange={(index) => setThemeHighlightedIndex(index)}
+        onSelect={(index) => {
+          const name = index != null ? themeNames[index] : undefined;
+          if (name) setTheme(name);
+        }}
+      />
 
       <box marginTop={1}>
         <text fg={theme.text.muted}>Tab to navigate, Enter (in textarea: Ctrl+Enter) to save field</text>
@@ -176,6 +211,7 @@ function ProviderDetail({
   onBack: () => void;
   onSave: (model: Model) => void;
 }) {
+  const theme = useThemeStore((s) => s.theme);
   const provider = BUILTIN_PROVIDERS[providerId]!;
   const [apiKey, setApiKey] = useState(existing?.apiKey ?? "");
   const [baseURL, setBaseURL] = useState(existing?.baseURL ?? provider.defaultBaseURL ?? "");

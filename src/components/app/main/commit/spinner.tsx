@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { theme } from "../../../../lib/theme";
+import { useThemeStore } from "../../../../store/theme-store";
 
 const FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
 export function Spinner({ label }: { label: string }) {
+  const theme = useThemeStore((s) => s.theme);
   const [frame, setFrame] = useState(0);
 
   useEffect(() => {

@@ -1,13 +1,14 @@
 import type { ScrollBoxRenderable } from "@opentui/core";
 import { useRef } from "react";
-import { SCROLLBAR_OPTIONS } from "../../../lib/globals";
+import { getScrollbarOptions } from "../../../lib/globals";
 import { CommitFileList } from "./commit";
 import { useCommitFlowStore } from "./commit/store";
 import { useAppScreenStore } from "../store";
 import { HistoryEntryView } from "./history";
-import { theme } from "../../../lib/theme";
+import { useThemeStore } from "../../../store/theme-store";
 
 export function Main() {
+  const theme = useThemeStore((s) => s.theme);
   const commitFlowActive = useCommitFlowStore((s) => s.active);
   const viewingCommit = useAppScreenStore((s) => s.viewingCommit);
   const focusArea = useAppScreenStore((s) => s.focusArea);
@@ -20,7 +21,7 @@ export function Main() {
       ref={scrollRef}
       flexGrow={1}
       padding={1}
-      scrollbarOptions={SCROLLBAR_OPTIONS}
+      scrollbarOptions={getScrollbarOptions()}
       backgroundColor={isFocused ? theme.bg.surface : theme.bg.base}
       focused={isFocused}
     >
