@@ -5,11 +5,11 @@ export type ModelEntry = { id: string }
 
 const CHECK_TIMEOUT_MS = 30000
 
-async function withTimeout<T>(fn: () => Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> {
+async function withTimeout<T>(fn: (signal?: AbortSignal) => Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
   try {
-    return await fn()
+    return await fn(controller.signal)
   } catch (err) {
     if (err instanceof Error && err.name === 'AbortError') {
       throw new Error(errorMessage)
@@ -29,11 +29,12 @@ export class Provider {
     readonly needsApiKey?: boolean,
   ) {}
 
-  async listModels(apiKey: string, baseURL?: string): Promise<ModelEntry[]> {
+  async listModels(apiKey: string, baseURL?: string, signal?: AbortSignal): Promise<ModelEntry[]> {
     const url = baseURL || this.defaultBaseURL
     if (!url) throw new Error(`No base URL for ${this.id}`)
     const res = await fetch(`${url.replace(/\/$/, '')}/models`, {
       headers: { Authorization: `Bearer ${apiKey}` },
+      signal,
     })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const body: any = await res.json()
@@ -41,11 +42,10 @@ export class Provider {
   }
 
   async checkApiKey(m: Model): Promise<boolean> {
-    // Default implementation: try to list models
     const providerName = this.id;
     try {
       info(`checkApiKey ${providerName}: calling listModels`)
-      await withTimeout(() => this.listModels(m.apiKey, m.baseURL), CHECK_TIMEOUT_MS, 'API key check timed out')
+      await withTimeout((signal) => this.listModels(m.apiKey, m.baseURL, signal), CHECK_TIMEOUT_MS, 'API key check timed out')
       info(`checkApiKey ${providerName}: success`)
       return true
     } catch (e) {
@@ -66,7 +66,6 @@ export class RequestyProvider extends Provider {
   }
 
   override async checkApiKey(m: Model): Promise<boolean> {
-    // Requesty returns 200 even with invalid API key, so we need to actually try to generate text
     try {
       const result = await withTimeout(
         async () => {
@@ -96,8 +95,8 @@ export class GeminiProvider extends Provider {
     super('gemini', 'Gemini')
   }
 
-  override async listModels(apiKey: string): Promise<ModelEntry[]> {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`)
+  override async listModels(apiKey: string, _baseURL?: string, signal?: AbortSignal): Promise<ModelEntry[]> {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, { signal })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const body: any = await res.json()
     return (body.models || [])
@@ -116,9 +115,9 @@ export class OllamaProvider extends Provider {
     super('ollama', 'Ollama', undefined, true, false)
   }
 
-  override async listModels(baseURL?: string): Promise<ModelEntry[]> {
+  override async listModels(baseURL?: string, _apiKey?: string, signal?: AbortSignal): Promise<ModelEntry[]> {
     const url = (baseURL || 'http://localhost:11434').replace(/\/$/, '')
-    const res = await fetch(`${url}/api/tags`)
+    const res = await fetch(`${url}/api/tags`, { signal })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const body: any = await res.json()
     return (body.models || []).map((m: any) => ({ id: m.name }))

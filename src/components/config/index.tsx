@@ -7,8 +7,9 @@ import { useAppStore } from "../../store/app-store";
 import { useKeyboardStore } from "../../store/keyboard-store";
 import { useThemeStore } from "../../store/theme-store";
 import { themeNames } from "../../lib/themes";
-import { scrollConfigTo } from "../../lib/globals";
+import { useConfigScrollRef } from "../../lib/config-scroll-context";
 import { initConfigFormStore, useConfigFormStore } from "./store";
+import { useStateRef } from "../../lib/use-state-ref";
 
 // Tab order: 0=provider, 1=prefix, 2=suffix, 3=theme
 const HOME_FIELD_COUNT = 4;
@@ -18,6 +19,7 @@ export function ConfigScreen() {
   const theme = useThemeStore((s) => s.theme);
   const themeName = useThemeStore((s) => s.themeName);
   const config = useAppStore((s) => s.config);
+  const configScrollRef = useConfigScrollRef();
   const models = useConfigFormStore((s) => s.models);
   const instructionPrefix = useConfigFormStore((s) => s.instructionPrefix);
   const instructionSuffix = useConfigFormStore((s) => s.instructionSuffix);
@@ -50,8 +52,7 @@ export function ConfigScreen() {
     setInstructionSuffix(suffixRef.current?.plainText ?? "");
   };
 
-  const stateRef = useRef({ focusIndex, highlightedIndex, models, providerIds, closePopUp, removeModel, moveModel });
-  stateRef.current = { focusIndex, highlightedIndex, models, providerIds, closePopUp, removeModel, moveModel };
+  const stateRef = useStateRef({ focusIndex, highlightedIndex, models, providerIds, closePopUp, removeModel, moveModel });
 
   useEffect(() => {
     useKeyboardStore.getState().push({
@@ -121,9 +122,10 @@ export function ConfigScreen() {
 
   // Scroll the config popup to show the focused section
   useEffect(() => {
-    if (focusIndex === null) return;
+    if (focusIndex === null || !configScrollRef?.current) return;
     const ids = ["config-provider", "config-prefix", "config-suffix", "config-theme"];
-    scrollConfigTo(ids[focusIndex]!);
+    const childId = ids[focusIndex];
+    if (childId) configScrollRef.current.scrollChildIntoView(childId);
   }, [focusIndex]);
 
   return (
@@ -231,8 +233,7 @@ function ProviderDetail({
 
   const fieldCount = (provider.needsApiKey === false ? 0 : 1) + (provider.needsBaseURL ? 1 : 0) + 1;
 
-  const stateRef = useRef({ onBack, fieldCount });
-  stateRef.current = { onBack, fieldCount };
+  const stateRef = useStateRef({ onBack, fieldCount });
 
   useEffect(() => {
     const id = "config/provider-detail";

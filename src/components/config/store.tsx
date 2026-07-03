@@ -28,9 +28,8 @@ export const useConfigFormStore = create<ConfigValues>((set, get) => {
       useThemeStore.getState().setTheme(patch.theme);
     }
     set(next);
-    if (!isValidConfig(next)) return;
     writeConfig(next);
-    useAppStore.setState({ config: next });
+    useAppStore.setState({ config: isValidConfig(next) ? next : false });
   };
 
   return {

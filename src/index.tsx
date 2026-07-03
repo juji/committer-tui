@@ -5,6 +5,7 @@ import { useAppContext, createRoot } from "@opentui/react";
 import os from "node:os";
 import { useEffect } from "react";
 import { AppScreen } from "./components/app";
+import { ErrorBoundary } from "./components/error-boundary";
 import { Layout } from "./components/layout";
 import { Splash } from "./components/splash";
 import { useGlobalShortcuts } from "./lib/shortcuts";
@@ -25,10 +26,12 @@ function App() {
   }, [keyHandler]);
 
   return (
-    <Layout>
-      {screen === "splash" && <Splash />}
-      {screen === "app" && <AppScreen />}
-    </Layout>
+    <ErrorBoundary>
+      <Layout>
+        {screen === "splash" && <Splash />}
+        {screen === "app" && <AppScreen />}
+      </Layout>
+    </ErrorBoundary>
   );
 }
 

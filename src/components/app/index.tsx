@@ -1,10 +1,11 @@
 import { useTerminalDimensions } from "@opentui/react";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Bottom } from "./bottom";
 import { Main } from "./main";
 import { Sidebar } from "./sidebar";
 import { useAppScreenStore } from "./store";
 import { useKeyboardStore } from "../../store/keyboard-store";
+import { useStateRef } from "../../lib/use-state-ref";
 
 const STATUS_MIN_WIDTH = 100;
 const SCOPE_ID = "app";
@@ -19,8 +20,7 @@ export function AppScreen() {
   const viewHistoryEntry = useAppScreenStore((s) => s.viewHistoryEntry);
   const showStatus = width >= STATUS_MIN_WIDTH;
 
-  const stateRef = useRef({ focusArea, toggleSidebar, cycleFocusArea, focusHistory, viewHistoryEntry });
-  stateRef.current = { focusArea, toggleSidebar, cycleFocusArea, focusHistory, viewHistoryEntry };
+  const stateRef = useStateRef({ focusArea, toggleSidebar, cycleFocusArea, focusHistory, viewHistoryEntry });
 
   useEffect(() => {
     useKeyboardStore.getState().push({

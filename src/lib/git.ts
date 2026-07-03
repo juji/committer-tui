@@ -83,12 +83,15 @@ export async function getCommitLog(limit = 50, skip = 0): Promise<CommitLogEntry
 }
 
 export async function getCommitDiff(hash: string): Promise<FileDiff[]> {
-  const nameOutput = await runGit(["show", "--format=", "--name-only", hash]);
-  const paths = nameOutput.split("\n").filter((line) => line.length > 0);
+  const output = await runGit(["show", "--format=", "--name-only", "-p", hash]);
+  const sections = output.split(/^diff --git /m).filter((s) => s.trim().length > 0);
 
   const results: FileDiff[] = [];
-  for (const path of paths) {
-    const diff = await runGit(["show", "--format=", hash, "--", path]);
+  for (const section of sections) {
+    const headerMatch = section.match(/^--- a\/(.+)\n\+\+\+ b\/(.+)\n/);
+    if (!headerMatch?.[2]) continue;
+    const path = headerMatch[2];
+    const diff = "diff --git " + section;
     if (diff) results.push({ path, diff });
   }
   return results;
@@ -98,7 +101,6 @@ export async function getDiffs(paths: string[]): Promise<FileDiff[]> {
   if (paths.length === 0) return [];
 
   const files = await getChangedFiles();
-  const included = new Set(paths);
   const statusByPath = new Map(files.map((f) => [f.path, f.status]));
 
   const results: FileDiff[] = [];

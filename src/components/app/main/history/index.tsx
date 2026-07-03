@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { FileDiffList } from "../../file-diff-list";
 import { useAppScreenStore } from "../../store";
 import { useKeyboardStore } from "../../../../store/keyboard-store";
 import { useThemeStore } from "../../../../store/theme-store";
+import { useStateRef } from "../../../../lib/use-state-ref";
 
 const SCOPE_ID = "app/history";
 
@@ -14,8 +15,7 @@ export function HistoryEntryView() {
   const focusArea = useAppScreenStore((s) => s.focusArea);
   const viewHistoryDelta = useAppScreenStore((s) => s.viewHistoryDelta);
 
-  const stateRef = useRef({ closeHistoryEntry, viewHistoryDelta, focusArea });
-  stateRef.current = { closeHistoryEntry, viewHistoryDelta, focusArea };
+  const stateRef = useStateRef({ closeHistoryEntry, viewHistoryDelta, focusArea });
 
   useEffect(() => {
     useKeyboardStore.getState().push({

@@ -1,9 +1,7 @@
 import { create } from "zustand";
 import { type ChangedFile, type FileDiff, getChangedFiles, getDiffs, runGitStreaming } from "../../../../lib/git";
 import { generateCommitMessage } from "../../../../lib/generate";
-import { DEFAULT_INSTRUCTION_PREFIX } from "../../../../lib/config";
-import { useAppStore } from "../../../../store/app-store";
-import { useAppScreenStore } from "../../store";
+import { DEFAULT_INSTRUCTION_PREFIX, type Config } from "../../../../lib/config";
 
 interface CommitFile extends ChangedFile {
   excluded: boolean;
@@ -29,7 +27,7 @@ interface CommitFlowState {
   committed: boolean;
   startCommitFlow: () => Promise<void>;
   toggleFileExcluded: (path: string) => void;
-  confirmSelection: () => Promise<void>;
+  confirmSelection: (config: Config | false | null) => Promise<void>;
   cancelCommitFlow: () => void;
   commit: () => Promise<void>;
   setMessage: (message: string) => void;
@@ -47,8 +45,6 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
   commitOutput: [],
   committed: false,
   startCommitFlow: async () => {
-    useAppScreenStore.getState().closeHistoryEntry();
-    useAppScreenStore.setState({ focusArea: "main" });
     try {
       const changedFiles = await getChangedFiles();
       const noFiles = changedFiles.length === 0;
@@ -64,9 +60,6 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
         commitOutput: [],
         committed: false,
       });
-      if (noFiles) {
-        useAppScreenStore.setState({ focusArea: "bottom", focusedButtonIndex: 0 });
-      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       set({
@@ -81,7 +74,6 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
         commitOutput: [],
         committed: false,
       });
-      useAppScreenStore.setState({ focusArea: "bottom", focusedButtonIndex: 0 });
     }
   },
   toggleFileExcluded: (path) => {
@@ -89,12 +81,11 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
       files: get().files.map((f) => (f.path === path ? { ...f, excluded: !f.excluded } : f)),
     });
   },
-  confirmSelection: async () => {
+  confirmSelection: async (config) => {
     if (get().generating) return;
     const included = get().files.filter((f) => !f.excluded).map((f) => f.path);
     if (included.length === 0) {
       set({ error: "No file(s) to commit" });
-      useAppScreenStore.setState({ focusArea: "bottom", focusedButtonIndex: 0 });
       return;
     }
     let diffs: FileDiff[];
@@ -103,12 +94,10 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       set({ error: `Git error: ${msg}` });
-      useAppScreenStore.setState({ focusArea: "bottom", focusedButtonIndex: 0 });
       return;
     }
     set({ diffs, generating: true, modelAttempts: [], message: null, error: null });
 
-    const config = useAppStore.getState().config;
     const models = config ? config.models : [];
     const combinedDiff = diffs.map((d) => d.diff).join("\n");
 
@@ -128,7 +117,6 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
           error: null,
           modelAttempts: s.modelAttempts.map((a) => (a === attempt ? { ...a, status: "ok" } : a)),
         }));
-        useAppScreenStore.getState().setFocusedButtonIndex(0);
         return;
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : String(err);
@@ -171,7 +159,6 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
       await runGitStreaming(["add", "--", ...included], appendLine);
       await runGitStreaming(["commit", "-m", message], appendLine);
       set({ committing: false, committed: true });
-      await useAppScreenStore.getState().loadHistory();
     } catch (err) {
       set({ committing: false, error: err instanceof Error ? err.message : String(err) });
     }

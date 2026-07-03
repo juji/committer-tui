@@ -15,6 +15,7 @@ interface ButtonSpec {
 
 export function Bottom() {
   const theme = useThemeStore((s) => s.theme);
+  const config = useAppStore((s) => s.config);
   const commitFlowActive = useCommitFlowStore((s) => s.active);
   const startCommitFlow = useCommitFlowStore((s) => s.startCommitFlow);
   const hasMessage = useCommitFlowStore((s) => s.message !== null);
@@ -32,24 +33,53 @@ export function Bottom() {
   const setBottomButtonCount = useAppScreenStore((s) => s.setBottomButtonCount);
   const openPopUp = useAppStore((s) => s.openPopUp);
   const popUpOpen = useAppStore((s) => s.popUpOpen);
+  const closeHistoryEntry = useAppScreenStore((s) => s.closeHistoryEntry);
+  const loadHistory = useAppScreenStore((s) => s.loadHistory);
+
+  const handleStartCommitFlow = async () => {
+    closeHistoryEntry();
+    setFocusArea("main");
+    await startCommitFlow();
+    // If no files after starting, focus bottom
+    if (useCommitFlowStore.getState().files.length === 0) {
+      useAppScreenStore.setState({ focusArea: "bottom", focusedButtonIndex: 0 });
+    }
+  };
+
+  const handleConfirmSelection = async () => {
+    await confirmSelection(config);
+    const state = useCommitFlowStore.getState();
+    if (state.error) {
+      useAppScreenStore.setState({ focusArea: "bottom", focusedButtonIndex: 0 });
+    } else if (state.message) {
+      useAppScreenStore.getState().setFocusedButtonIndex(0);
+    }
+  };
+
+  const handleCommit = async () => {
+    await commit();
+    if (useCommitFlowStore.getState().committed) {
+      await loadHistory();
+    }
+  };
 
   const buttons: ButtonSpec[] = [];
   if (committing) {
     buttons.push({ label: "Committing...", onActivate: () => {} });
   } else if (committed || hasResult) {
     if (!committed && hasMessage) {
-      buttons.push({ label: "Confirm", onActivate: commit });
+      buttons.push({ label: "Confirm", onActivate: handleCommit });
       buttons.push({ label: "Edit", onActivate: () => openPopUp("edit-message") });
     }
-    buttons.push({ label: committed ? "Commit" : "Redo", onActivate: startCommitFlow });
+    buttons.push({ label: committed ? "Commit" : "Redo", onActivate: handleStartCommitFlow });
   } else if (commitFlowActive) {
     buttons.push({
       label: generating ? "Generating..." : "Generate",
       disabled: generating,
-      onActivate: generating ? () => {} : confirmSelection,
+      onActivate: generating ? () => {} : handleConfirmSelection,
     });
   } else {
-    buttons.push({ label: "Commit", onActivate: startCommitFlow });
+    buttons.push({ label: "Commit", onActivate: handleStartCommitFlow });
   }
 
   const isFocused = focusArea === "bottom";

@@ -4,6 +4,7 @@ import { useAppStore } from "../../../../store/app-store";
 import { useKeyboardStore } from "../../../../store/keyboard-store";
 import { useCommitFlowStore } from "./store";
 import { useThemeStore } from "../../../../store/theme-store";
+import { useStateRef } from "../../../../lib/use-state-ref";
 
 const SCOPE_ID = "edit-message";
 const SUBMIT_KEY_BINDINGS = [{ name: "return", ctrl: true, action: "submit" as const }];
@@ -22,8 +23,7 @@ export function EditMessagePopover() {
     commit();
   };
 
-  const stateRef = useRef({ closePopUp });
-  stateRef.current = { closePopUp };
+  const stateRef = useStateRef({ closePopUp });
 
   useEffect(() => {
     useKeyboardStore.getState().push({

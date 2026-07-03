@@ -8,7 +8,7 @@ import { Toast } from "./toast";
 import { useAppStore } from "../store/app-store";
 import { useAutoCopySelection } from "../lib/clipboard";
 import { useThemeStore } from "../store/theme-store";
-import { setConfigScrollRef } from "../lib/globals";
+import { ConfigScrollProvider } from "../lib/config-scroll-context";
 
 const OVERLAY_COLOR = RGBA.fromValues(0, 0, 0, 0.7);
 
@@ -25,9 +25,6 @@ export function Layout({ children }: { children?: ReactNode }) {
   const tooSmall = width < MIN_WIDTH || height < MIN_HEIGHT;
 
   useAutoCopySelection();
-
-  // Expose the config scroll ref so ConfigScreen can scroll on focus change
-  setConfigScrollRef(configScrollRef);
 
   const hints = ["ctrl+c exit"];
   if (!popUpOpen) {
@@ -76,7 +73,9 @@ export function Layout({ children }: { children?: ReactNode }) {
               backgroundColor={theme.bg.elevated}
               zIndex={11}
             >
-              <ConfigScreen />
+              <ConfigScrollProvider value={configScrollRef}>
+                <ConfigScreen />
+              </ConfigScrollProvider>
             </scrollbox>
           </box>
         )}
