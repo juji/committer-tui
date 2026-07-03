@@ -40,6 +40,11 @@ export async function runGitStreaming(args: string[], onLine: (line: string) => 
   }
 }
 
+// Stage one path at a time, not `git add -- ...paths` in one call: the file list can go stale
+// between when the commit flow snapshots `git status` and when the user confirms (e.g. a path
+// gets deleted/untracked in between). A single bad pathspec fails the whole batched `add` with
+// exit 128 and aborts the entire commit. Per-path calls let one bad file get skipped (reported
+// via onLine) while the rest still stage and the commit proceeds.
 export async function addPaths(paths: string[], onLine: (line: string) => void): Promise<void> {
   for (const path of paths) {
     try {
