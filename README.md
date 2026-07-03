@@ -79,9 +79,12 @@ Each model needs a provider, model name, and API key:
 }
 ```
 
-Supported providers: `gemini`, `groq`, `cerebras`, `requesty`, `openrouter`,
-`ollama`. `ollama` runs against a local server (defaults to
-`http://localhost:11434`) and doesn't need an API key.
+Supported providers: `openai`, `anthropic`, `gemini`, `groq`, `cerebras`,
+`mistral`, `deepseek`, `together`, `fireworks`, `xai`, `perplexity`,
+`requesty`, `openrouter`, `ollama`, `ollama-cloud`. `ollama` runs against a
+local server (defaults to `http://localhost:11434`) and doesn't need an API
+key. `ollama-cloud` runs against `https://ollama.com` and needs an API key
+from your Ollama account.
 
 You can also override the instructions sent to the model with
 `instructionPrefix` / `instructionSuffix`, either from the config screen or

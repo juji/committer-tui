@@ -138,7 +138,7 @@ export function ConfigScreen({ configScrollRef }: { configScrollRef: RefObject<S
         <select
           options={providerOptions}
           selectedIndex={highlightedIndex}
-          height={6}
+          height={10}
           showDescription={true}
           itemSpacing={0}
           focused={focusIndex === 0}

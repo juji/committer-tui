@@ -37,7 +37,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 <section id="features">
   <div>
     <h2>Bring your own model</h2>
-    <p>Gemini, Groq, Cerebras, Requesty, OpenRouter, or a local Ollama — plug in whichever you already have keys for.</p>
+    <p>OpenAI, Anthropic, Gemini, Groq, Cerebras, Mistral, DeepSeek, Together AI, Fireworks, xAI, Perplexity, Requesty, OpenRouter, Ollama Cloud, or a local Ollama — plug in whichever you already have keys for.</p>
   </div>
   <div>
     <h2>Nothing leaves your machine</h2>

@@ -6,7 +6,7 @@ import { info, json } from "localog";
 
 export interface Model {
   name: string
-  provider: "gemini" | "groq" | "cerebras" | "requesty" | "openrouter" | "ollama"
+  provider: "gemini" | "openai" | "anthropic" | "groq" | "cerebras" | "requesty" | "openrouter" | "ollama" | "ollama-cloud" | "mistral" | "deepseek" | "together" | "fireworks" | "xai" | "perplexity"
   model: string
   apiKey: string
   baseURL?: string
@@ -34,7 +34,7 @@ export function getConfigPath(): string {
   return path.join(getConfigDir(), "config.json");
 }
 
-const PROVIDERS = ["gemini", "groq", "cerebras", "requesty", "openrouter", "ollama"];
+const PROVIDERS = ["gemini", "openai", "anthropic", "groq", "cerebras", "requesty", "openrouter", "ollama", "ollama-cloud", "mistral", "deepseek", "together", "fireworks", "xai", "perplexity"];
 
 function isValidModel(model: unknown): model is Model {
   if (typeof model !== "object" || model === null) return false;

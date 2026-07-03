@@ -28,6 +28,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.7",
     "@ai-sdk/google": "^4.0.3",
     "@ai-sdk/openai": "^4.0.4",
     "@opentui/core": "^0.4.2",

@@ -115,7 +115,7 @@ export class OllamaProvider extends Provider {
     super('ollama', 'Ollama', undefined, true, false)
   }
 
-  override async listModels(baseURL?: string, _apiKey?: string, signal?: AbortSignal): Promise<ModelEntry[]> {
+  override async listModels(_apiKey?: string, baseURL?: string, signal?: AbortSignal): Promise<ModelEntry[]> {
     const url = (baseURL || 'http://localhost:11434').replace(/\/$/, '')
     const res = await fetch(`${url}/api/tags`, { signal })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -129,11 +129,64 @@ export class OllamaProvider extends Provider {
   }
 }
 
+export class OllamaCloudProvider extends Provider {
+  constructor() {
+    super('ollama-cloud', 'Ollama Cloud', 'https://ollama.com', false, true)
+  }
+
+  override async listModels(apiKey: string, baseURL?: string, signal?: AbortSignal): Promise<ModelEntry[]> {
+    const url = (baseURL || this.defaultBaseURL)!.replace(/\/$/, '')
+    const res = await fetch(`${url}/api/tags`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      signal,
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const body: any = await res.json()
+    return (body.models || []).map((m: any) => ({ id: m.name }))
+  }
+
+  override async createModel(m: Model) {
+    const { createOllama } = await import('ollama-ai-provider')
+    return createOllama({ baseURL: `${(m.baseURL || this.defaultBaseURL)!.replace(/\/$/, '')}/v1`, headers: { Authorization: `Bearer ${m.apiKey}` } }).chat(m.model) as any
+  }
+}
+
+export class AnthropicProvider extends Provider {
+  constructor() {
+    super('anthropic', 'Anthropic', 'https://api.anthropic.com/v1')
+  }
+
+  override async listModels(apiKey: string, baseURL?: string, signal?: AbortSignal): Promise<ModelEntry[]> {
+    const url = (baseURL || this.defaultBaseURL)!.replace(/\/$/, '')
+    const res = await fetch(`${url}/models`, {
+      headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+      signal,
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const body: any = await res.json()
+    return (body.data || []).map((m: any) => ({ id: m.id }))
+  }
+
+  override async createModel(m: Model) {
+    const { createAnthropic } = await import('@ai-sdk/anthropic')
+    return createAnthropic({ apiKey: m.apiKey, baseURL: m.baseURL || this.defaultBaseURL })(m.model)
+  }
+}
+
 export const BUILTIN_PROVIDERS: Record<string, Provider> = {
   gemini: new GeminiProvider(),
+  openai: new Provider('openai', 'OpenAI', 'https://api.openai.com/v1'),
+  anthropic: new AnthropicProvider(),
   groq: new Provider('groq', 'Groq', 'https://api.groq.com/openai/v1'),
   cerebras: new Provider('cerebras', 'Cerebras', 'https://api.cerebras.ai/v1'),
   requesty: new RequestyProvider(),
   openrouter: new Provider('openrouter', 'OpenRouter', 'https://openrouter.ai/api/v1'),
   ollama: new OllamaProvider(),
+  'ollama-cloud': new OllamaCloudProvider(),
+  mistral: new Provider('mistral', 'Mistral', 'https://api.mistral.ai/v1'),
+  deepseek: new Provider('deepseek', 'DeepSeek', 'https://api.deepseek.com/v1'),
+  together: new Provider('together', 'Together AI', 'https://api.together.xyz/v1'),
+  fireworks: new Provider('fireworks', 'Fireworks AI', 'https://api.fireworks.ai/inference/v1'),
+  xai: new Provider('xai', 'xAI', 'https://api.x.ai/v1'),
+  perplexity: new Provider('perplexity', 'Perplexity', 'https://api.perplexity.ai'),
 }
