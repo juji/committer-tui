@@ -164,7 +164,7 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
               <box height={1} flexShrink={0} />
               {commitOutput.map((line, i) => {
                 const m = line.match(/^(\[[^\]]+\])(.*)/);
-                if (m) {
+                if (m && i === 0) {
                   return (
                     <text key={i}>
                       <span fg={theme.semantic.success}>{m[1]}</span>
