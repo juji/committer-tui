@@ -38,6 +38,29 @@ function displayPath(cwd: string): string {
   return cwd === home || cwd.startsWith(home + "/") ? `~${cwd.slice(home.length)}` : cwd;
 }
 
+if (process.argv.includes("--help") || process.argv.includes("-h")) {
+  console.log(`committer — AI-powered commit messages for git
+
+USAGE
+  committer          Start the TUI
+  committer --help   Show this message
+
+KEYBOARD
+  ctrl+c       Exit
+  ctrl+g       Open config
+  ctrl+y       Toggle history sidebar
+  tab          Cycle focus between areas
+  enter        Activate focused button
+  esc          Go back / close panel
+
+CONFIG
+  ~/.config/committer/config.json
+
+All providers, instructions, and theme are configured
+from within the TUI.`);
+  process.exit(0);
+}
+
 const renderer = await createCliRenderer();
 renderer.setTerminalTitle(`COMMITTER ${displayPath(process.cwd())}`);
 createRoot(renderer).render(<App />);
