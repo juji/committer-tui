@@ -137,7 +137,12 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
               </box>
             </box>
           )}
-          {error && <text fg={theme.semantic.error}>{error}</text>}
+          {error && (
+            <box flexDirection="column">
+              <box height={1} flexShrink={0} />
+              <text fg={theme.semantic.error}>{error}</text>
+            </box>
+          )}
         </box>
       )}
 
