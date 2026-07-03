@@ -4,23 +4,10 @@ import { useAppStore, type ProviderStatus } from "../store/app-store";
 import { useKeyboardStore } from "../store/keyboard-store";
 import { useThemeStore } from "../store/theme-store";
 import { BUILTIN_PROVIDERS } from "../lib/provider";
+import { Spinner } from "./spinner";
 import { info } from "localog";
 
 const SCOPE_ID = "splash";
-
-const FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
-
-function Spinner() {
-  const theme = useThemeStore((s) => s.theme);
-  const [frame, setFrame] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(() => setFrame((f) => (f + 1) % FRAMES.length), 80);
-    return () => clearInterval(id);
-  }, []);
-
-  return <span fg={theme.accent.cyan}>{FRAMES[frame]}</span>;
-}
 
 function ProviderEntry({
   label,
@@ -31,26 +18,19 @@ function ProviderEntry({
 }) {
   const theme = useThemeStore((s) => s.theme);
 
+  if (status === "checking") return <Spinner label={`checking ${label} ...`} />;
+  if (status === "valid") {
+    return (
+      <text>
+        <span fg={theme.semantic.success}>✓</span>
+        <span fg={theme.text.muted}> {label} works</span>
+      </text>
+    );
+  }
   return (
     <text>
-      {status === "checking" && (
-        <>
-          <Spinner />
-          <span fg={theme.text.muted}> checking {label} ...</span>
-        </>
-      )}
-      {status === "valid" && (
-        <>
-          <span fg={theme.semantic.success}>✓</span>
-          <span fg={theme.text.muted}> {label} works</span>
-        </>
-      )}
-      {status === "invalid" && (
-        <>
-          <span fg={theme.semantic.error}>✗</span>
-          <span fg={theme.text.muted}> {label} invalid</span>
-        </>
-      )}
+      <span fg={theme.semantic.error}>✗</span>
+      <span fg={theme.text.muted}> {label} invalid</span>
     </text>
   );
 }
