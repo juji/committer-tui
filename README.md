@@ -28,7 +28,16 @@ Supports x64 and arm64. Without a bash shell on Windows, download the
 matching `.exe` from the [latest release](https://github.com/juji/committer-tui/releases/latest)
 directly.
 
-### Option 2: build from source
+### Option 2: npm
+
+```bash
+npm install -g committer-tui
+```
+
+Installs a small wrapper that downloads the matching prebuilt binary for
+your platform on install (same binaries as Option 1).
+
+### Option 3: build from source
 
 Requires [Bun](https://bun.sh).
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// ponytail: best-effort binary fetch, bin/committer.mjs falls back to Bun+source if this fails
+// ponytail: best-effort binary fetch; bin/committer.mjs errors clearly if this fails
 import { createWriteStream, chmodSync, existsSync, mkdirSync } from "node:fs";
 import { pipeline } from "node:stream/promises";
 import { fileURLToPath } from "node:url";
@@ -29,7 +29,7 @@ async function main() {
   const key = targetKey();
   const assetName = TARGETS[key];
   if (!assetName) {
-    console.warn(`committer: no prebuilt binary for ${key}, will run from source via Bun`);
+    console.warn(`committer: no prebuilt binary for ${key}`);
     return;
   }
 
@@ -45,7 +45,7 @@ async function main() {
     chmodSync(outPath, 0o755);
     console.log(`committer: installed native binary for ${key}`);
   } catch (err) {
-    console.warn(`committer: could not download prebuilt binary (${err.message}), will run from source via Bun`);
+    console.warn(`committer: could not download prebuilt binary (${err.message})`);
   }
 }
 
