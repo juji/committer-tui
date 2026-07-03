@@ -4,6 +4,7 @@ import { createCliRenderer } from "@opentui/core";
 import { useAppContext, createRoot } from "@opentui/react";
 import os from "node:os";
 import { useEffect } from "react";
+import packageJson from "../package.json";
 import { AppScreen } from "./components/app";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Layout } from "./components/layout";
@@ -65,5 +66,5 @@ from within the TUI.`);
 }
 
 const renderer = await createCliRenderer();
-renderer.setTerminalTitle(`COMMITTER ${displayPath(process.cwd())}`);
+renderer.setTerminalTitle(`COMMITTER v${packageJson.version} ${displayPath(process.cwd())}`);
 createRoot(renderer).render(<App />);
