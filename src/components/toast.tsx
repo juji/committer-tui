@@ -9,7 +9,7 @@ export function Toast() {
 
   return (
     <box position="absolute" top={2} left={2} zIndex={20}>
-      <box backgroundColor={theme.accent.purpleDim} paddingLeft={2} paddingRight={2}>
+      <box backgroundColor={theme.accent.purpleDim} paddingY={1} paddingLeft={2} paddingRight={2}>
         <text fg={theme.text.primary}>{message}</text>
       </box>
     </box>
