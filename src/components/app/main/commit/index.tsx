@@ -7,6 +7,7 @@ import { Spinner } from "../../../spinner";
 import { useCommitFlowStore } from "./store";
 import { useThemeStore } from "../../../../store/theme-store";
 import { useStateRef } from "../../../../lib/use-state-ref";
+import { getCurrentBranch } from "../../../../lib/git";
 
 const SCOPE_ID = "app/commit";
 
@@ -27,6 +28,9 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
   const focusArea = useAppScreenStore((s) => s.focusArea);
 
   const [focusedIndex, setFocusedIndex] = useState(0);
+  const [branch, setBranch] = useState("");
+
+  useEffect(() => { getCurrentBranch().then(setBranch); }, []);
 
   const isFocused = focusArea === "main";
   const selectRef = useRef<SelectRenderable>(null);
@@ -76,7 +80,7 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
   return (
     <>
       <box flexShrink={0}>
-        <text fg={theme.text.primary} attributes={1}>COMMITTER</text>
+        <text fg={theme.text.primary} attributes={1}>COMMITTER{branch ? ` [${branch}]` : ""}</text>
       </box>
 
       {files.length > 0 && (

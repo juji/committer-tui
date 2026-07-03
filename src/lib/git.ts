@@ -82,6 +82,14 @@ export async function getCommitLog(limit = 50, skip = 0): Promise<CommitLogEntry
     });
 }
 
+export async function getCurrentBranch(): Promise<string> {
+  try {
+    return (await runGit(["rev-parse", "--abbrev-ref", "HEAD"])).trim();
+  } catch {
+    return "unknown";
+  }
+}
+
 export async function getCommitDiff(hash: string): Promise<FileDiff[]> {
   const output = await runGit(["show", "--format=", "-p", hash]);
   const sections = output.split(/^diff --git /m).filter((s) => s.trim().length > 0);
