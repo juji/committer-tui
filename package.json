@@ -1,6 +1,6 @@
 {
   "name": "committer-tui",
-  "version": "0.5.0",
+  "version": "0.0.0",
   "module": "src/index.tsx",
   "type": "module",
   "license": "MIT",
