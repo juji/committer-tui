@@ -30,6 +30,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
+      - run: npm version --no-git-tag-version "${GITHUB_REF_NAME#v}"
       - run: bun build --compile --target=${{ matrix.target }} src/index.tsx --outfile ${{ matrix.asset }}
       - uses: actions/upload-artifact@v4
         with:
