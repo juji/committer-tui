@@ -87,7 +87,7 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
         <box flexDirection="column" height={headerHeight} flexShrink={0}>
           <box height={1} flexShrink={0} />
           <text fg={theme.text.muted}>Space to exclude, Enter to confirm, Esc to cancel</text>
-          <box height={1} flexShrink={0} />
+          <box height={2} flexShrink={0} />
           <select
             ref={selectRef}
             options={options}
@@ -98,6 +98,8 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
             focusedBackgroundColor={theme.bg.hover}
             onChange={(index) => setFocusedIndex(index)}
           />
+          <box height={1} flexShrink={0} />
+          <text fg={theme.text.dim}>Tab+Enter to generate commit message, or click Generate</text>
         </box>
       )}
 
