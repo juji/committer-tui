@@ -40,6 +40,16 @@ export async function runGitStreaming(args: string[], onLine: (line: string) => 
   }
 }
 
+export async function addPaths(paths: string[], onLine: (line: string) => void): Promise<void> {
+  for (const path of paths) {
+    try {
+      await runGitStreaming(["add", "--", path], onLine);
+    } catch (err) {
+      onLine(`skipped ${path}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+}
+
 export async function getChangedFiles(): Promise<ChangedFile[]> {
   const output = await runGit(["status", "--porcelain", "-uall"]);
   return output

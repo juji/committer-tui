@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { type ChangedFile, type FileDiff, getChangedFiles, getDiffs, runGitStreaming } from "@/lib/git";
+import { addPaths, type ChangedFile, type FileDiff, getChangedFiles, getDiffs, runGitStreaming } from "@/lib/git";
 import { generateCommitMessage } from "@/lib/generate";
 import { DEFAULT_INSTRUCTION_PREFIX, type Config } from "@/lib/config";
 
@@ -156,7 +156,7 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
     const appendLine = (line: string) => set((s) => ({ commitOutput: [...s.commitOutput, line] }));
 
     try {
-      await runGitStreaming(["add", "--", ...included], appendLine);
+      await addPaths(included, appendLine);
       await runGitStreaming(["commit", "-m", message], appendLine);
       set({ committing: false, committed: true });
     } catch (err) {

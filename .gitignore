@@ -1,6 +1,9 @@
 # dependencies (bun install)
 node_modules
 
+# downloaded native binary (postinstall)
+bin/committer-bin*
+
 # output
 out
 dist
