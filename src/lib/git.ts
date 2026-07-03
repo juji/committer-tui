@@ -3,8 +3,16 @@ export interface ChangedFile {
   status: string;
 }
 
+function spawnGit(args: string[]) {
+  try {
+    return Bun.spawn(["git", ...args], { cwd: process.cwd(), stdout: "pipe", stderr: "pipe" });
+  } catch {
+    throw new Error("git not found — is it installed and in PATH?");
+  }
+}
+
 async function runGit(args: string[], allowedExitCodes: number[] = [0]): Promise<string> {
-  const proc = Bun.spawn(["git", ...args], { cwd: process.cwd(), stdout: "pipe", stderr: "pipe" });
+  const proc = spawnGit(args);
   const [stdout, exitCode] = await Promise.all([new Response(proc.stdout).text(), proc.exited]);
   if (!allowedExitCodes.includes(exitCode)) {
     const stderr = await new Response(proc.stderr).text();
@@ -14,7 +22,7 @@ async function runGit(args: string[], allowedExitCodes: number[] = [0]): Promise
 }
 
 export async function runGitStreaming(args: string[], onLine: (line: string) => void): Promise<void> {
-  const proc = Bun.spawn(["git", ...args], { cwd: process.cwd(), stdout: "pipe", stderr: "pipe" });
+  const proc = spawnGit(args);
 
   const readLines = async (stream: ReadableStream<Uint8Array>) => {
     for await (const chunk of stream) {
