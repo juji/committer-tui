@@ -159,7 +159,7 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
           {committed && (
             <box flexDirection="column" backgroundColor={theme.semantic.successBg} paddingX={2} paddingY={1}>
               <text fg={theme.semantic.success} attributes={1}>
-                ✓ Commit created.
+                ✓ Commit created{branch ? ` [${branch}]` : ""}
               </text>
               <box height={1} flexShrink={0} />
               {commitOutput.map((line, i) => (
