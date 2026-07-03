@@ -62,13 +62,19 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <div class="code-block-bar"><button class="copy-btn" type="button">Copy</button></div>
     <pre data-shiki="bash">curl -fsSL https://raw.githubusercontent.com/juji/committer-tui/main/install.sh | bash</pre>
   </div>
-  <p>Or build it yourself:</p>
+  <p>Or via npm:</p>
+  <div class="code-block">
+    <div class="code-block-bar"><button class="copy-btn" type="button">Copy</button></div>
+    <pre data-shiki="bash">npm install -g committer-tui</pre>
+  </div>
+  <p>Or build it yourself (requires <a href="https://bun.sh" target="_blank">Bun</a>):</p>
   <div class="code-block">
     <div class="code-block-bar"><button class="copy-btn" type="button">Copy</button></div>
     <pre data-shiki="bash">git clone git@github.com:juji/committer-tui.git
 cd committer-tui
 bun install
-ln -s "$(pwd)/bin/committer.mjs" /usr/local/bin/committer</pre>
+bun build --compile src/index.tsx --outfile committer-bin
+ln -s "$(pwd)/committer-bin" /usr/local/bin/committer</pre>
   </div>
   <ul class="platforms">
     <li>macOS</li>

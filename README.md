@@ -51,7 +51,6 @@ ln -s "$(pwd)/committer-bin" /usr/local/bin/committer
 
 (`bin/committer.mjs` is the npm-installed wrapper and expects a
 downloaded prebuilt binary next to it — not used when building from source.)
-```
 
 ## Usage
 
