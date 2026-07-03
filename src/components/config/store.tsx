@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import { DEFAULT_INSTRUCTION_PREFIX, type Config, isValidConfig, type Model, writeConfig } from "../../lib/config";
-import { useAppStore } from "../../store/app-store";
-import { useThemeStore } from "../../store/theme-store";
+import { DEFAULT_INSTRUCTION_PREFIX, type Config, isValidConfig, type Model, writeConfig } from "@/lib/config";
+import { useAppStore } from "@/store/app-store";
+import { useThemeStore } from "@/store/theme-store";
 
 interface ConfigValues {
   instructionPrefix: string;

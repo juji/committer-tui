@@ -1,11 +1,11 @@
 import type { ScrollBoxRenderable } from "@opentui/core";
 import { useRef } from "react";
-import { getScrollbarOptions } from "../../../lib/globals";
+import { getScrollbarOptions } from "@/lib/globals";
 import { CommitFileList } from "./commit";
 import { useCommitFlowStore } from "./commit/store";
 import { useAppScreenStore } from "../store";
 import { HistoryEntryView } from "./history";
-import { useThemeStore } from "../../../store/theme-store";
+import { useThemeStore } from "@/store/theme-store";
 
 export function Main() {
   const theme = useThemeStore((s) => s.theme);

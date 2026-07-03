@@ -2,12 +2,12 @@ import type { ScrollBoxRenderable, SelectOption, SelectRenderable } from "@opent
 import { type RefObject, useEffect, useRef, useState } from "react";
 import { FileDiffList } from "../../file-diff-list";
 import { useAppScreenStore } from "../../store";
-import { useKeyboardStore } from "../../../../store/keyboard-store";
+import { useKeyboardStore } from "@/store/keyboard-store";
 import { Spinner } from "../../../spinner";
 import { useCommitFlowStore } from "./store";
-import { useThemeStore } from "../../../../store/theme-store";
-import { useStateRef } from "../../../../lib/use-state-ref";
-import { getCurrentBranch } from "../../../../lib/git";
+import { useThemeStore } from "@/store/theme-store";
+import { useStateRef } from "@/lib/use-state-ref";
+import { getCurrentBranch } from "@/lib/git";
 
 const SCOPE_ID = "app/commit";
 

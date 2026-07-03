@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import { type ChangedFile, type FileDiff, getChangedFiles, getDiffs, runGitStreaming } from "../../../../lib/git";
-import { generateCommitMessage } from "../../../../lib/generate";
-import { DEFAULT_INSTRUCTION_PREFIX, type Config } from "../../../../lib/config";
+import { type ChangedFile, type FileDiff, getChangedFiles, getDiffs, runGitStreaming } from "@/lib/git";
+import { generateCommitMessage } from "@/lib/generate";
+import { DEFAULT_INSTRUCTION_PREFIX, type Config } from "@/lib/config";
 
 interface CommitFile extends ChangedFile {
   excluded: boolean;

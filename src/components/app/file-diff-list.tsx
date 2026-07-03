@@ -1,5 +1,5 @@
-import type { FileDiff } from "../../lib/git";
-import { useThemeStore } from "../../store/theme-store";
+import type { FileDiff } from "@/lib/git";
+import { useThemeStore } from "@/store/theme-store";
 
 export function FileDiffList({ diffs, focused, scrollable = true }: { diffs: FileDiff[]; focused: boolean; scrollable?: boolean }) {
   const theme = useThemeStore((s) => s.theme);

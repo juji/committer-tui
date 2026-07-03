@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { FileDiffList } from "../../file-diff-list";
 import { useAppScreenStore } from "../../store";
-import { useKeyboardStore } from "../../../../store/keyboard-store";
-import { useThemeStore } from "../../../../store/theme-store";
-import { useStateRef } from "../../../../lib/use-state-ref";
+import { useKeyboardStore } from "@/store/keyboard-store";
+import { useThemeStore } from "@/store/theme-store";
+import { useStateRef } from "@/lib/use-state-ref";
 
 const SCOPE_ID = "app/history";
 

@@ -1,9 +1,9 @@
 import type { ScrollBoxRenderable } from "@opentui/core";
 import { useEffect, useRef } from "react";
-import { getScrollbarOptions } from "../../../lib/globals";
+import { getScrollbarOptions } from "@/lib/globals";
 import { useCommitFlowStore } from "../main/commit/store";
 import { useAppScreenStore } from "../store";
-import { useThemeStore } from "../../../store/theme-store";
+import { useThemeStore } from "@/store/theme-store";
 import { Spinner } from "../../spinner";
 
 const STATUS_WIDTH = 40;

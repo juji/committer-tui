@@ -4,8 +4,8 @@ import { Bottom } from "./bottom";
 import { Main } from "./main";
 import { Sidebar } from "./sidebar";
 import { useAppScreenStore } from "./store";
-import { useKeyboardStore } from "../../store/keyboard-store";
-import { useStateRef } from "../../lib/use-state-ref";
+import { useKeyboardStore } from "@/store/keyboard-store";
+import { useStateRef } from "@/lib/use-state-ref";
 
 const STATUS_MIN_WIDTH = 100;
 const SCOPE_ID = "app";

@@ -1,14 +1,14 @@
 import type { SelectOption, ScrollBoxRenderable, TextareaRenderable } from "@opentui/core";
 import { type RefObject, useEffect, useRef, useState } from "react";
-import type { Model } from "../../lib/config";
-import { FENCE_INSTRUCTIONS } from "../../lib/generate";
-import { BUILTIN_PROVIDERS, type ModelEntry } from "../../lib/provider";
-import { useAppStore } from "../../store/app-store";
-import { useKeyboardStore } from "../../store/keyboard-store";
-import { useThemeStore } from "../../store/theme-store";
-import { themeNames } from "../../lib/themes";
+import type { Model } from "@/lib/config";
+import { FENCE_INSTRUCTIONS } from "@/lib/generate";
+import { BUILTIN_PROVIDERS, type ModelEntry } from "@/lib/provider";
+import { useAppStore } from "@/store/app-store";
+import { useKeyboardStore } from "@/store/keyboard-store";
+import { useThemeStore } from "@/store/theme-store";
+import { themeNames } from "@/lib/themes";
 import { initConfigFormStore, useConfigFormStore } from "./store";
-import { useStateRef } from "../../lib/use-state-ref";
+import { useStateRef } from "@/lib/use-state-ref";
 
 // Tab order: 0=provider, 1=prefix, 2=suffix, 3=theme
 const HOME_FIELD_COUNT = 4;
