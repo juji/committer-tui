@@ -50,6 +50,7 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
     useAppScreenStore.getState().closeHistoryEntry();
     useAppScreenStore.setState({ focusArea: "main" });
     const changedFiles = await getChangedFiles();
+    const noFiles = changedFiles.length === 0;
     set({
       active: true,
       files: changedFiles.map((f) => ({ ...f, excluded: false })),
@@ -57,11 +58,14 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
       generating: false,
       modelAttempts: [],
       message: null,
-      error: changedFiles.length === 0 ? "No file(s) to commit" : null,
+      error: noFiles ? "No file(s) to commit" : null,
       committing: false,
       commitOutput: [],
       committed: false,
     });
+    if (noFiles) {
+      useAppScreenStore.setState({ focusArea: "bottom", focusedButtonIndex: 0 });
+    }
   },
   toggleFileExcluded: (path) => {
     set({
@@ -73,6 +77,7 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
     const included = get().files.filter((f) => !f.excluded).map((f) => f.path);
     if (included.length === 0) {
       set({ error: "No file(s) to commit" });
+      useAppScreenStore.setState({ focusArea: "bottom", focusedButtonIndex: 0 });
       return;
     }
     const diffs = await getDiffs(included);
