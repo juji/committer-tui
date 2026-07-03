@@ -1,4 +1,4 @@
-import { useThemeStore } from "../store/theme-store";
+import { useThemeStore } from "@/store/theme-store";
 
 export function getScrollbarOptions() {
   const theme = useThemeStore.getState().theme;

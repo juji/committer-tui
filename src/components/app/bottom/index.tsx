@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { useAppScreenStore } from "../store";
+import { useAppScreenStore } from "@/components/app/store";
 import { useAppStore } from "@/store/app-store";
-import { useCommitFlowStore } from "../main/commit/store";
+import { useCommitFlowStore } from "@/components/app/main/commit/store";
 import { useThemeStore } from "@/store/theme-store";
 
 const BUTTONS_HEIGHT = 5;

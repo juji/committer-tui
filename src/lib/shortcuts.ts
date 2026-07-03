@@ -1,5 +1,5 @@
 import { useKeyboard } from "@opentui/react";
-import { useAppStore } from "../store/app-store";
+import { useAppStore } from "@/store/app-store";
 
 export function useGlobalShortcuts() {
   const screen = useAppStore((s) => s.screen);

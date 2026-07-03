@@ -1,9 +1,9 @@
 import type { ScrollBoxRenderable, SelectOption, SelectRenderable } from "@opentui/core";
 import { type RefObject, useEffect, useRef, useState } from "react";
-import { FileDiffList } from "../../file-diff-list";
-import { useAppScreenStore } from "../../store";
+import { FileDiffList } from "@/components/app/file-diff-list";
+import { useAppScreenStore } from "@/components/app/store";
 import { useKeyboardStore } from "@/store/keyboard-store";
-import { Spinner } from "../../../spinner";
+import { Spinner } from "@/components/spinner";
 import { useCommitFlowStore } from "./store";
 import { useThemeStore } from "@/store/theme-store";
 import { useStateRef } from "@/lib/use-state-ref";

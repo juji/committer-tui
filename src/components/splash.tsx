@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { ScrollBoxRenderable } from "@opentui/core";
-import { useAppStore, type ProviderStatus } from "../store/app-store";
-import { useKeyboardStore } from "../store/keyboard-store";
-import { useThemeStore } from "../store/theme-store";
-import { BUILTIN_PROVIDERS } from "../lib/provider";
+import { useAppStore, type ProviderStatus } from "@/store/app-store";
+import { useKeyboardStore } from "@/store/keyboard-store";
+import { useThemeStore } from "@/store/theme-store";
+import { BUILTIN_PROVIDERS } from "@/lib/provider";
 import { Spinner } from "./spinner";
 import { info } from "localog";
 

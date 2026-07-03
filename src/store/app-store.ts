@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { type Config, readConfig, writeConfig } from "../lib/config";
-import { BUILTIN_PROVIDERS } from "../lib/provider";
+import { type Config, readConfig, writeConfig } from "@/lib/config";
+import { BUILTIN_PROVIDERS } from "@/lib/provider";
 import { useThemeStore } from "./theme-store";
 import { info, error } from "localog";
 

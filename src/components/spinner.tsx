@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useThemeStore } from "../store/theme-store";
+import { useThemeStore } from "@/store/theme-store";
 
 const FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 

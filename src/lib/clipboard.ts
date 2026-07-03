@@ -1,7 +1,7 @@
 import { CliRenderEvents, type Selection } from "@opentui/core";
 import { useRenderer } from "@opentui/react";
 import { useEffect } from "react";
-import { useToastStore } from "../store/toast-store";
+import { useToastStore } from "@/store/toast-store";
 
 export function useAutoCopySelection() {
   const renderer = useRenderer();

@@ -5,9 +5,9 @@ import { useRef } from "react";
 import { ConfigScreen } from "./config";
 import { EditMessagePopover } from "./app/main/commit/edit-message";
 import { Toast } from "./toast";
-import { useAppStore } from "../store/app-store";
-import { useAutoCopySelection } from "../lib/clipboard";
-import { useThemeStore } from "../store/theme-store";
+import { useAppStore } from "@/store/app-store";
+import { useAutoCopySelection } from "@/lib/clipboard";
+import { useThemeStore } from "@/store/theme-store";
 
 const OVERLAY_COLOR = RGBA.fromValues(0, 0, 0, 0.7);
 

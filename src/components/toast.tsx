@@ -1,5 +1,5 @@
-import { useToastStore } from "../store/toast-store";
-import { useThemeStore } from "../store/theme-store";
+import { useToastStore } from "@/store/toast-store";
+import { useThemeStore } from "@/store/theme-store";
 
 export function Toast() {
   const theme = useThemeStore((s) => s.theme);

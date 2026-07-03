@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { getScrollbarOptions } from "@/lib/globals";
 import { CommitFileList } from "./commit";
 import { useCommitFlowStore } from "./commit/store";
-import { useAppScreenStore } from "../store";
+import { useAppScreenStore } from "@/components/app/store";
 import { HistoryEntryView } from "./history";
 import { useThemeStore } from "@/store/theme-store";
 
