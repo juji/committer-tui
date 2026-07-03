@@ -47,6 +47,10 @@ export function HistoryEntryView() {
 
   return (
     <>
+      <box flexShrink={0}>
+        <text fg={theme.text.muted} attributes={1}>History</text>
+      </box>
+      <box height={1} flexShrink={0} />
       <box flexDirection="column" height={2 + messageLines + 2} flexShrink={0}>
         <text fg={theme.text.muted}>
           <span fg={theme.accent.purple}>{commit.hash.slice(0, 7)}</span>
