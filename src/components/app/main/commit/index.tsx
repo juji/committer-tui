@@ -75,6 +75,10 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
 
   return (
     <>
+      <box flexShrink={0}>
+        <text fg={theme.text.primary} attributes={1}>COMMITTER</text>
+      </box>
+
       {files.length > 0 && (
         <box flexDirection="column" height={headerHeight} flexShrink={0}>
           <box height={1} flexShrink={0} />
