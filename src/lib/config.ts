@@ -15,6 +15,7 @@ export interface Model {
 export interface Config {
   instructionPrefix: string
   instructionSuffix: string
+  theme: string
   models: Model[]
 }
 
@@ -54,6 +55,7 @@ export function isValidConfig(config: unknown): config is Config {
   return (
     (c.instructionPrefix === undefined || typeof c.instructionPrefix === "string") &&
     (c.instructionSuffix === undefined || typeof c.instructionSuffix === "string") &&
+    (c.theme === undefined || typeof c.theme === "string") &&
     Array.isArray(c.models) &&
     c.models.length > 0 &&
     c.models.every(isValidModel)
@@ -84,6 +86,7 @@ export async function readConfig(): Promise<Config | false | null> {
     ...parsed,
     instructionPrefix: parsed.instructionPrefix ?? DEFAULT_INSTRUCTION_PREFIX,
     instructionSuffix: parsed.instructionSuffix ?? "",
+    theme: parsed.theme ?? "midnight-aurora",
   };
 }
 

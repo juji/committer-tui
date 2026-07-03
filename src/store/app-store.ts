@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { type Config, readConfig, writeConfig, type Model } from "../lib/config";
 import { BUILTIN_PROVIDERS } from "../lib/provider";
+import { useThemeStore } from "./theme-store";
 import { info, error } from "localog";
 
 export type Screen = "splash" | "app";
@@ -38,6 +39,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   providerStatuses: {},
   loadConfig: async () => {
     const config = await readConfig();
+    if (config && typeof config === "object" && config.theme) {
+      useThemeStore.getState().setTheme(config.theme);
+    }
     set({ config, popUpOpen: config ? null : "config" });
   },
   saveConfig: async (config) => {

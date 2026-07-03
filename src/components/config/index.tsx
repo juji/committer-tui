@@ -17,7 +17,6 @@ const SCOPE_ID = "config";
 export function ConfigScreen() {
   const theme = useThemeStore((s) => s.theme);
   const themeName = useThemeStore((s) => s.themeName);
-  const setTheme = useThemeStore((s) => s.setTheme);
   const config = useAppStore((s) => s.config);
   const models = useConfigFormStore((s) => s.models);
   const instructionPrefix = useConfigFormStore((s) => s.instructionPrefix);
@@ -200,7 +199,9 @@ export function ConfigScreen() {
           onChange={(index) => setThemeHighlightedIndex(index)}
           onSelect={(index) => {
             const name = index != null ? themeNames[index] : undefined;
-            if (name) setTheme(name);
+            if (name) {
+              useConfigFormStore.getState().setTheme(name);
+            }
           }}
         />
       </box>
