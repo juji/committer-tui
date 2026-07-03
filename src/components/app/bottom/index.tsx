@@ -118,6 +118,7 @@ function Button({
       paddingRight={1}
       marginLeft={marginLeft}
       onKeyDown={(key) => {
+        if (disabled) return;
         if (key.name === "return") onActivate();
       }}
       onMouseDown={() => {

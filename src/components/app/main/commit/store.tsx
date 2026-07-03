@@ -49,21 +49,38 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
   startCommitFlow: async () => {
     useAppScreenStore.getState().closeHistoryEntry();
     useAppScreenStore.setState({ focusArea: "main" });
-    const changedFiles = await getChangedFiles();
-    const noFiles = changedFiles.length === 0;
-    set({
-      active: true,
-      files: changedFiles.map((f) => ({ ...f, excluded: false })),
-      diffs: null,
-      generating: false,
-      modelAttempts: [],
-      message: null,
-      error: noFiles ? "No file(s) to commit" : null,
-      committing: false,
-      commitOutput: [],
-      committed: false,
-    });
-    if (noFiles) {
+    try {
+      const changedFiles = await getChangedFiles();
+      const noFiles = changedFiles.length === 0;
+      set({
+        active: true,
+        files: changedFiles.map((f) => ({ ...f, excluded: false })),
+        diffs: null,
+        generating: false,
+        modelAttempts: [],
+        message: null,
+        error: noFiles ? "No file(s) to commit" : null,
+        committing: false,
+        commitOutput: [],
+        committed: false,
+      });
+      if (noFiles) {
+        useAppScreenStore.setState({ focusArea: "bottom", focusedButtonIndex: 0 });
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      set({
+        active: true,
+        files: [],
+        diffs: null,
+        generating: false,
+        modelAttempts: [],
+        message: null,
+        error: `Git error: ${msg}`,
+        committing: false,
+        commitOutput: [],
+        committed: false,
+      });
       useAppScreenStore.setState({ focusArea: "bottom", focusedButtonIndex: 0 });
     }
   },
@@ -80,7 +97,15 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
       useAppScreenStore.setState({ focusArea: "bottom", focusedButtonIndex: 0 });
       return;
     }
-    const diffs = await getDiffs(included);
+    let diffs: FileDiff[];
+    try {
+      diffs = await getDiffs(included);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      set({ error: `Git error: ${msg}` });
+      useAppScreenStore.setState({ focusArea: "bottom", focusedButtonIndex: 0 });
+      return;
+    }
     set({ diffs, generating: true, modelAttempts: [], message: null, error: null });
 
     const config = useAppStore.getState().config;

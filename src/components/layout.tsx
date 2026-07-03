@@ -1,4 +1,5 @@
 import { RGBA, type ScrollBoxRenderable } from "@opentui/core";
+import { useTerminalDimensions } from "@opentui/react";
 import type { ReactNode } from "react";
 import { useRef } from "react";
 import { ConfigScreen } from "./config";
@@ -11,12 +12,17 @@ import { setConfigScrollRef } from "../lib/globals";
 
 const OVERLAY_COLOR = RGBA.fromValues(0, 0, 0, 0.7);
 
+const MIN_WIDTH = 60;
+const MIN_HEIGHT = 15;
+
 export function Layout({ children }: { children?: ReactNode }) {
   const theme = useThemeStore((s) => s.theme);
   const config = useAppStore((s) => s.config);
   const popUpOpen = useAppStore((s) => s.popUpOpen);
   const screen = useAppStore((s) => s.screen);
   const configScrollRef = useRef<ScrollBoxRenderable>(null);
+  const { width, height } = useTerminalDimensions();
+  const tooSmall = width < MIN_WIDTH || height < MIN_HEIGHT;
 
   useAutoCopySelection();
 
@@ -29,6 +35,17 @@ export function Layout({ children }: { children?: ReactNode }) {
     if (screen === "app") hints.push("ctrl+y history");
   } else if (config) {
     hints.push("esc back");
+  }
+
+  if (tooSmall) {
+    return (
+      <box flexDirection="column" flexGrow={1} alignItems="center" justifyContent="center" backgroundColor={theme.bg.base}>
+        <text fg={theme.accent.cyan} attributes={1}>Terminal too small</text>
+        <box height={1} flexShrink={0} />
+        <text fg={theme.text.muted}>Resize to at least {MIN_WIDTH}x{MIN_HEIGHT}</text>
+        <text fg={theme.text.dim}>{width}x{height} current</text>
+      </box>
+    );
   }
 
   return (

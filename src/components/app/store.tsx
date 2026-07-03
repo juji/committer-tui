@@ -68,19 +68,27 @@ export const useAppScreenStore = create<AppScreenState>((set, get) => ({
   hasMoreHistory: true,
   loadingMoreHistory: false,
   loadHistory: async () => {
-    const history = await getCommitLog(PAGE_SIZE);
-    set({ history, hasMoreHistory: history.length === PAGE_SIZE });
+    try {
+      const history = await getCommitLog(PAGE_SIZE);
+      set({ history, hasMoreHistory: history.length === PAGE_SIZE });
+    } catch {
+      set({ history: [], hasMoreHistory: false });
+    }
   },
   loadMoreHistory: async () => {
     const { history, hasMoreHistory, loadingMoreHistory } = get();
     if (!hasMoreHistory || loadingMoreHistory) return;
     set({ loadingMoreHistory: true });
-    const more = await getCommitLog(PAGE_SIZE, history.length);
-    set({
-      history: [...history, ...more],
-      hasMoreHistory: more.length === PAGE_SIZE,
-      loadingMoreHistory: false,
-    });
+    try {
+      const more = await getCommitLog(PAGE_SIZE, history.length);
+      set({
+        history: [...history, ...more],
+        hasMoreHistory: more.length === PAGE_SIZE,
+        loadingMoreHistory: false,
+      });
+    } catch {
+      set({ loadingMoreHistory: false });
+    }
   },
 
   historyIndex: 0,
@@ -98,8 +106,12 @@ export const useAppScreenStore = create<AppScreenState>((set, get) => ({
     const { history, historyIndex } = get();
     const entry = history[historyIndex];
     if (!entry) return;
-    const diff = await getCommitDiff(entry.hash);
-    set({ viewingCommit: entry, viewingDiff: diff });
+    try {
+      const diff = await getCommitDiff(entry.hash);
+      set({ viewingCommit: entry, viewingDiff: diff });
+    } catch {
+      set({ viewingCommit: entry, viewingDiff: null });
+    }
   },
   viewHistoryDelta: async (delta) => {
     const { history, historyIndex } = get();
@@ -107,8 +119,12 @@ export const useAppScreenStore = create<AppScreenState>((set, get) => ({
     const nextIndex = (historyIndex + delta + history.length) % history.length;
     const entry = history[nextIndex];
     if (!entry) return;
-    const diff = await getCommitDiff(entry.hash);
-    set({ historyIndex: nextIndex, viewingCommit: entry, viewingDiff: diff });
+    try {
+      const diff = await getCommitDiff(entry.hash);
+      set({ historyIndex: nextIndex, viewingCommit: entry, viewingDiff: diff });
+    } catch {
+      set({ historyIndex: nextIndex, viewingCommit: entry, viewingDiff: null });
+    }
   },
   closeHistoryEntry: () => set({ viewingCommit: null, viewingDiff: null }),
 }));

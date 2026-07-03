@@ -4,12 +4,14 @@ import { getScrollbarOptions } from "../../../lib/globals";
 import { useCommitFlowStore } from "../main/commit/store";
 import { useAppScreenStore } from "../store";
 import { useThemeStore } from "../../../store/theme-store";
+import { Spinner } from "../../spinner";
 
 const STATUS_WIDTH = 40;
 
 export function Sidebar() {
   const theme = useThemeStore((s) => s.theme);
   const log = useAppScreenStore((s) => s.history);
+  const loadingMoreHistory = useAppScreenStore((s) => s.loadingMoreHistory);
   const loadHistory = useAppScreenStore((s) => s.loadHistory);
   const loadMoreHistory = useAppScreenStore((s) => s.loadMoreHistory);
   const focusArea = useAppScreenStore((s) => s.focusArea);
@@ -52,6 +54,11 @@ export function Sidebar() {
         stickyScroll
         stickyStart="top"
       >
+        {loadingMoreHistory && (
+          <box paddingX={1} paddingY={1}>
+            <Spinner label="Loading more..." />
+          </box>
+        )}
         {log.map((entry, i) => {
           const selected = isFocused && i === historyIndex;
           return (
