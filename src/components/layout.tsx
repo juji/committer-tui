@@ -8,7 +8,6 @@ import { Toast } from "./toast";
 import { useAppStore } from "../store/app-store";
 import { useAutoCopySelection } from "../lib/clipboard";
 import { useThemeStore } from "../store/theme-store";
-import { ConfigScrollContext } from "../lib/config-scroll-context";
 
 const OVERLAY_COLOR = RGBA.fromValues(0, 0, 0, 0.7);
 
@@ -73,9 +72,7 @@ export function Layout({ children }: { children?: ReactNode }) {
               backgroundColor={theme.bg.elevated}
               zIndex={11}
             >
-              <ConfigScrollContext value={configScrollRef}>
-                <ConfigScreen />
-              </ConfigScrollContext>
+              <ConfigScreen configScrollRef={configScrollRef} />
             </scrollbox>
           </box>
         )}

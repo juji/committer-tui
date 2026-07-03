@@ -1,5 +1,5 @@
-import type { SelectOption, TextareaRenderable } from "@opentui/core";
-import { useEffect, useRef, useState } from "react";
+import type { SelectOption, ScrollBoxRenderable, TextareaRenderable } from "@opentui/core";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import type { Model } from "../../lib/config";
 import { FENCE_INSTRUCTIONS } from "../../lib/generate";
 import { BUILTIN_PROVIDERS, type ModelEntry } from "../../lib/provider";
@@ -7,7 +7,6 @@ import { useAppStore } from "../../store/app-store";
 import { useKeyboardStore } from "../../store/keyboard-store";
 import { useThemeStore } from "../../store/theme-store";
 import { themeNames } from "../../lib/themes";
-import { useConfigScrollRef } from "../../lib/config-scroll-context";
 import { initConfigFormStore, useConfigFormStore } from "./store";
 import { useStateRef } from "../../lib/use-state-ref";
 
@@ -15,11 +14,10 @@ import { useStateRef } from "../../lib/use-state-ref";
 const HOME_FIELD_COUNT = 4;
 const SCOPE_ID = "config";
 
-export function ConfigScreen() {
+export function ConfigScreen({ configScrollRef }: { configScrollRef: RefObject<ScrollBoxRenderable | null> }) {
   const theme = useThemeStore((s) => s.theme);
   const themeName = useThemeStore((s) => s.themeName);
   const config = useAppStore((s) => s.config);
-  const configScrollRef = useConfigScrollRef();
   const models = useConfigFormStore((s) => s.models);
   const instructionPrefix = useConfigFormStore((s) => s.instructionPrefix);
   const instructionSuffix = useConfigFormStore((s) => s.instructionSuffix);

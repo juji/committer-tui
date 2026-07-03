@@ -83,12 +83,12 @@ export async function getCommitLog(limit = 50, skip = 0): Promise<CommitLogEntry
 }
 
 export async function getCommitDiff(hash: string): Promise<FileDiff[]> {
-  const output = await runGit(["show", "--format=", "--name-only", "-p", hash]);
+  const output = await runGit(["show", "--format=", "-p", hash]);
   const sections = output.split(/^diff --git /m).filter((s) => s.trim().length > 0);
 
   const results: FileDiff[] = [];
   for (const section of sections) {
-    const headerMatch = section.match(/^--- a\/(.+)\n\+\+\+ b\/(.+)\n/);
+    const headerMatch = section.match(/--- a\/(.+)\n\+\+\+ b\/(.+)\n/);
     if (!headerMatch?.[2]) continue;
     const path = headerMatch[2];
     const diff = "diff --git " + section;
