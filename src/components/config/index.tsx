@@ -106,6 +106,14 @@ export function ConfigScreen() {
     description: name === themeName ? "active" : "",
   }));
 
+  // Scroll the config popup to show the focused section
+  useEffect(() => {
+    if (focusIndex === null || !configScrollRef?.current) return;
+    const ids = ["config-provider", "config-prefix", "config-suffix", "config-theme"];
+    const childId = ids[focusIndex];
+    if (childId) configScrollRef.current.scrollChildIntoView(childId);
+  }, [focusIndex]);
+
   if (providerId) {
     return (
       <ProviderDetail
@@ -119,14 +127,6 @@ export function ConfigScreen() {
       />
     );
   }
-
-  // Scroll the config popup to show the focused section
-  useEffect(() => {
-    if (focusIndex === null || !configScrollRef?.current) return;
-    const ids = ["config-provider", "config-prefix", "config-suffix", "config-theme"];
-    const childId = ids[focusIndex];
-    if (childId) configScrollRef.current.scrollChildIntoView(childId);
-  }, [focusIndex]);
 
   return (
     <box flexDirection="column" padding={1}>
