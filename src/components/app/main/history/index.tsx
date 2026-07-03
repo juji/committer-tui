@@ -58,7 +58,7 @@ export function HistoryEntryView() {
         </box>
       </box>
       <box height={1} flexShrink={0} />
-      {diffs && <FileDiffList diffs={diffs} focused={focusArea === "main"} />}
+      {diffs && <FileDiffList diffs={diffs} focused={focusArea === "main"} scrollable={false} />}
     </>
   );
 }
