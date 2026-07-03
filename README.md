@@ -11,7 +11,7 @@ diff, generates a conventional commit message, lets you edit it, and commits
 
 ---
 
-![committer screenshot](asset/image.png)
+![committer screenshot](https://media.githubusercontent.com/media/juji/committer-tui/main/asset/image.png)
 
 ## Install
 
