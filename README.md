@@ -45,7 +45,12 @@ Requires [Bun](https://bun.sh).
 git clone git@github.com:juji/committer-tui.git
 cd committer-tui
 bun install
-ln -s "$(pwd)/bin/committer.mjs" /usr/local/bin/committer
+bun build --compile src/index.tsx --outfile committer-bin
+ln -s "$(pwd)/committer-bin" /usr/local/bin/committer
+```
+
+(`bin/committer.mjs` is the npm-installed wrapper and expects a
+downloaded prebuilt binary next to it — not used when building from source.)
 ```
 
 ## Usage
