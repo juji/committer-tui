@@ -162,11 +162,18 @@ export function CommitFileList({ scrollRef }: { scrollRef: RefObject<ScrollBoxRe
                 ✓ Commit created
               </text>
               <box height={1} flexShrink={0} />
-              {commitOutput.map((line, i) => (
-                <text key={i} fg={i === 0 ? theme.semantic.success : theme.text.primary}>
-                  {line}
-                </text>
-              ))}
+              {commitOutput.map((line, i) => {
+                const m = line.match(/^(\[[^\]]+\])(.*)/);
+                if (m) {
+                  return (
+                    <text key={i}>
+                      <span fg={theme.semantic.success}>{m[1]}</span>
+                      <span fg={theme.text.primary}>{m[2]}</span>
+                    </text>
+                  );
+                }
+                return <text key={i} fg={theme.text.primary}>{line}</text>;
+              })}
             </box>
           )}
           {!committed && commitOutput.length > 0 && (
