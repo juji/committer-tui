@@ -47,6 +47,7 @@ if (process.argv.includes("--help") || process.argv.includes("-h")) {
 
 USAGE
   committer          Start the TUI
+  committer -c        Run the commit cycle in the terminal (no TUI)
   committer --help   Show this message
 
 KEYBOARD
@@ -62,6 +63,12 @@ CONFIG
 
 All providers, instructions, and theme are configured
 from within the TUI.`);
+  process.exit(0);
+}
+
+if (process.argv.includes("-c") || process.argv.includes("--cli")) {
+  const { runCli } = await import("./cli");
+  await runCli();
   process.exit(0);
 }
 

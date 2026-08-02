@@ -37,5 +37,9 @@
     "react": "^19.2.6",
     "zod": "4",
     "zustand": "^5.0.14"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.7.0",
+    "ora": "^9.4.1"
   }
 }
