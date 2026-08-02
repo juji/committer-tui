@@ -66,6 +66,20 @@ Or during development, without linking:
 bun dev
 ```
 
+### CLI mode
+
+Prefer the terminal over a TUI? `-c` (or `--cli`) runs the same commit cycle
+as plain prompts — no full-screen UI:
+
+```bash
+committer -c
+```
+
+It checks that a provider is configured, asks which changed file(s) to
+include (all selected by default), generates a commit message with your
+configured model(s), lets you confirm, edit (opens `$EDITOR`), or cancel,
+then commits.
+
 ### Shortcuts
 
 | Key      | Action        |
@@ -102,6 +116,11 @@ from your Ollama account.
 You can also override the instructions sent to the model with
 `instructionPrefix` / `instructionSuffix`, either from the config screen or
 directly in the JSON file.
+
+`maxRetries` (config screen or `config.json`) controls how many times a
+failed API call is retried before falling back to the next configured model.
+Leave it unset for the default (2 retries); set it to `0` to disable
+retries entirely.
 
 ### Privacy
 
