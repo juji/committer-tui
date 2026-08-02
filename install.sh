@@ -45,6 +45,7 @@ echo "Installed $version to $dest"
 expected="${version#v}"
 ok=""
 for attempt in 1 2 3; do
+  echo "Checking installed binary (attempt $attempt)..."
   actual="$("$dest" --version 2>/dev/null || true)"
   if [ "$actual" = "$expected" ]; then
     ok=1
