@@ -42,6 +42,11 @@ function displayPath(cwd: string): string {
   return cwd === home || cwd.startsWith(home + "/") ? `~${cwd.slice(home.length)}` : cwd;
 }
 
+if (process.argv.includes("--version") || process.argv.includes("-v")) {
+  console.log(packageJson.version);
+  process.exit(0);
+}
+
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
   console.log(`committer — AI-powered commit messages for git
 
@@ -49,6 +54,7 @@ USAGE
   committer          Start the TUI
   committer -c        Run the commit cycle in the terminal (no TUI)
   committer --help   Show this message
+  committer --version Show the installed version
 
 KEYBOARD
   ctrl+c       Exit
