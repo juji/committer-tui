@@ -33,6 +33,8 @@ jobs:
       - run: npm version --no-git-tag-version "${GITHUB_REF_NAME#v}"
         shell: bash
       - run: bun build --compile --target=${{ matrix.target }} src/index.tsx --outfile ${{ matrix.asset }}
+      - if: runner.os == 'macOS'
+        run: codesign --force -s - ${{ matrix.asset }}
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset }}
