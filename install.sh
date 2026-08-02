@@ -39,23 +39,18 @@ chmod +x "$dest"
 
 echo "Installed $version to $dest"
 
-# Verify the installed binary reports the version we just downloaded. On
-# macOS, first execution of a freshly-written binary can also race the
-# kernel's code-signature validation and get killed even though the
-# signature is valid, so retry a few times with a short wait there; on other
-# platforms a single check is enough — a mismatch there is a real failure,
-# not a timing fluke.
+# Verify the installed binary reports the version we just downloaded.
+# Retries with a short wait since first execution of a freshly-written
+# binary can race the OS's own executable validation and fail transiently.
 expected="${version#v}"
-attempts=1
-[ "$os" = "Darwin" ] && attempts=3
 ok=""
-for attempt in $(seq 1 "$attempts"); do
+for attempt in 1 2 3; do
   actual="$("$dest" --version 2>/dev/null || true)"
   if [ "$actual" = "$expected" ]; then
     ok=1
     break
   fi
-  [ "$attempt" -lt "$attempts" ] && sleep 2
+  sleep 2
 done
 if [ -z "$ok" ]; then
   echo "warning: could not verify $dest reports version $expected (got: '${actual:-}')" >&2
