@@ -4,6 +4,9 @@ set -euo pipefail
 
 REPO="juji/committer-tui"
 INSTALL_DIR="${COMMITTER_INSTALL_DIR:-$HOME/.local/bin}"
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
 
 os="$(uname -s)"
 arch="$(uname -m)"
@@ -53,8 +56,10 @@ for attempt in 1 2 3; do
   fi
   sleep 2
 done
-if [ -z "$ok" ]; then
-  echo "warning: could not verify $dest reports version $expected (got: '${actual:-}')" >&2
+if [ -n "$ok" ]; then
+  echo -e "${GREEN}✓ Verified $dest is version $expected${NC}"
+else
+  echo -e "${RED}✗ Could not verify $dest reports version $expected (got: '${actual:-}')${NC}" >&2
 fi
 
 case ":$PATH:" in
