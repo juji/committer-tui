@@ -35,20 +35,33 @@ jobs:
       - run: npm version --no-git-tag-version "${GITHUB_REF_NAME#v}"
         shell: bash
       - run: bun build --compile --target=${{ matrix.target }} src/index.tsx --outfile ${{ matrix.asset }}
+      # macOS binaries are signed here — actions/upload-artifact zips and
+      # re-extracts the file, which invalidates the ad-hoc signature before
+      # it ever reaches the release.
+      - if: runner.os == 'macOS'
+        run: codesign --force -s - ${{ matrix.asset }}
+      - name: Checksum (bash)
+        if: runner.os != 'Windows'
+        run: shasum -a 256 ${{ matrix.asset }} > ${{ matrix.asset }}.sha256
+      - name: Checksum (windows)
+        if: runner.os == 'Windows'
+        run: (Get-FileHash ${{ matrix.asset }} -Algorithm SHA256).Hash.ToLower() + "  ${{ matrix.asset }}" | Out-File -Encoding ascii ${{ matrix.asset }}.sha256
+        shell: pwsh
       - if: runner.os != 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset }}
-          path: ${{ matrix.asset }}
-      # macOS binaries are signed and uploaded to the release directly from this
-      # job — actions/upload-artifact zips and re-extracts the file, which
-      # invalidates the ad-hoc signature before it ever reaches the release.
-      - if: runner.os == 'macOS'
-        run: codesign --force -s - ${{ matrix.asset }}
+          path: |
+            ${{ matrix.asset }}
+            ${{ matrix.asset }}.sha256
+      # macOS assets are uploaded to the release directly from this job — see
+      # the codesign note above.
       - if: runner.os == 'macOS'
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ matrix.asset }}
+          files: |
+            ${{ matrix.asset }}
+            ${{ matrix.asset }}.sha256
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
 

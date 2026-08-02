@@ -38,6 +38,23 @@ version="$(curl -fsIL -o /dev/null -w '%{url_effective}' "https://github.com/${R
 
 echo "Downloading $asset ($version)..."
 curl -fL "$url" -o "$dest"
+
+echo "Verifying checksum..."
+sha_url="https://github.com/${REPO}/releases/latest/download/${asset}.sha256"
+sha_file="$(mktemp)"
+trap 'rm -f "$sha_file"' EXIT
+curl -fsL "$sha_url" -o "$sha_file"
+expected_sha="$(awk '{print $1}' "$sha_file")"
+actual_sha="$(shasum -a 256 "$dest" | awk '{print $1}')"
+if [ "$actual_sha" != "$expected_sha" ]; then
+  echo -e "${RED}✗ Checksum mismatch for $dest${NC}" >&2
+  echo "  expected: $expected_sha" >&2
+  echo "  actual:   $actual_sha" >&2
+  rm -f "$dest"
+  exit 1
+fi
+echo -e "${GREEN}✓ Checksum verified${NC}"
+
 chmod +x "$dest"
 
 echo "Installed $version to $dest"
