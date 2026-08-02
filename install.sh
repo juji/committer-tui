@@ -31,11 +31,13 @@ url="https://github.com/${REPO}/releases/latest/download/${asset}"
 mkdir -p "$INSTALL_DIR"
 dest="$INSTALL_DIR/committer${exe}"
 
-echo "Downloading $asset..."
+version="$(curl -fsIL -o /dev/null -w '%{url_effective}' "https://github.com/${REPO}/releases/latest" | sed 's#.*/tag/##')"
+
+echo "Downloading $asset ($version)..."
 curl -fL "$url" -o "$dest"
 chmod +x "$dest"
 
-echo "Installed to $dest"
+echo "Installed $version to $dest"
 case ":$PATH:" in
   *":$INSTALL_DIR:"*) ;;
   *) echo "warning: $INSTALL_DIR is not on your PATH. Add it with:" && echo "  export PATH=\"$INSTALL_DIR:\$PATH\"" ;;
