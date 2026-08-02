@@ -10,8 +10,8 @@ import { themeNames } from "@/lib/themes";
 import { initConfigFormStore, useConfigFormStore } from "./store";
 import { useStateRef } from "@/lib/use-state-ref";
 
-// Tab order: 0=provider, 1=prefix, 2=suffix, 3=theme
-const HOME_FIELD_COUNT = 4;
+// Tab order: 0=provider, 1=maxRetries, 2=prefix, 3=suffix, 4=theme
+const HOME_FIELD_COUNT = 5;
 const SCOPE_ID = "config";
 
 export function ConfigScreen({ configScrollRef }: { configScrollRef: RefObject<ScrollBoxRenderable | null> }) {
@@ -21,8 +21,10 @@ export function ConfigScreen({ configScrollRef }: { configScrollRef: RefObject<S
   const models = useConfigFormStore((s) => s.models);
   const instructionPrefix = useConfigFormStore((s) => s.instructionPrefix);
   const instructionSuffix = useConfigFormStore((s) => s.instructionSuffix);
+  const maxRetries = useConfigFormStore((s) => s.maxRetries);
   const setInstructionPrefix = useConfigFormStore((s) => s.setInstructionPrefix);
   const setInstructionSuffix = useConfigFormStore((s) => s.setInstructionSuffix);
+  const setMaxRetries = useConfigFormStore((s) => s.setMaxRetries);
   const setModel = useConfigFormStore((s) => s.setModel);
   const removeModel = useConfigFormStore((s) => s.removeModel);
   const moveModel = useConfigFormStore((s) => s.moveModel);
@@ -107,7 +109,7 @@ export function ConfigScreen({ configScrollRef }: { configScrollRef: RefObject<S
   // Scroll the config popup to show the focused section
   useEffect(() => {
     if (focusIndex === null || !configScrollRef?.current) return;
-    const ids = ["config-provider", "config-prefix", "config-suffix", "config-theme"];
+    const ids = ["config-provider", "config-max-retries", "config-prefix", "config-suffix", "config-theme"];
     const childId = ids[focusIndex];
     if (childId) configScrollRef.current.scrollChildIntoView(childId);
   }, [focusIndex]);
@@ -151,16 +153,28 @@ export function ConfigScreen({ configScrollRef }: { configScrollRef: RefObject<S
         <text fg={theme.text.muted}>Models are tried top to bottom. Shift+↑↓ to reorder, d to delete.</text>
       </box>
 
-      {/* Instruction Prefix — index 1 */}
+      {/* Max Retries — index 1 */}
+      <box id="config-max-retries" flexDirection="column" marginTop={1} marginBottom={1}>
+        <text fg={theme.text.primary} attributes={1}>Max Retries:</text>
+        <input
+          value={maxRetries}
+          placeholder="default (2)"
+          focused={focusIndex === 1}
+          focusedBackgroundColor={theme.bg.hover}
+          onChange={setMaxRetries}
+        />
+      </box>
+
+      {/* Instruction Prefix — index 2 */}
       <box id="config-prefix" flexDirection="column" marginTop={1} marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Instruction Prefix:</text>
-        <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 1 ? theme.accent.cyan : theme.bg.borderLight}>
+        <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 2 ? theme.accent.cyan : theme.bg.borderLight}>
           <textarea
             ref={prefixRef}
             initialValue={instructionPrefix}
             height={6}
             backgroundColor="transparent"
-            focused={focusIndex === 1}
+            focused={focusIndex === 2}
             onSubmit={() => setInstructionPrefix(prefixRef.current?.plainText ?? "")}
           />
         </box>
@@ -170,22 +184,22 @@ export function ConfigScreen({ configScrollRef }: { configScrollRef: RefObject<S
         <text fg={theme.text.dim}>{FENCE_INSTRUCTIONS}</text>
       </box>
 
-      {/* Instruction Suffix — index 2 */}
+      {/* Instruction Suffix — index 3 */}
       <box id="config-suffix" flexDirection="column" marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Instruction Suffix:</text>
-        <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 2 ? theme.accent.cyan : theme.bg.borderLight}>
+        <box paddingX={1} borderStyle="rounded" borderColor={focusIndex === 3 ? theme.accent.cyan : theme.bg.borderLight}>
           <textarea
             ref={suffixRef}
             initialValue={instructionSuffix}
             height={6}
             backgroundColor="transparent"
-            focused={focusIndex === 2}
+            focused={focusIndex === 3}
             onSubmit={() => setInstructionSuffix(suffixRef.current?.plainText ?? "")}
           />
         </box>
       </box>
 
-      {/* Theme selector — index 3 (bottom) */}
+      {/* Theme selector — index 4 (bottom) */}
       <box id="config-theme" flexDirection="column" marginTop={1} marginBottom={1}>
         <text fg={theme.text.primary} attributes={1}>Theme:</text>
         <select
@@ -194,7 +208,7 @@ export function ConfigScreen({ configScrollRef }: { configScrollRef: RefObject<S
           height={6}
           showDescription={true}
           itemSpacing={0}
-          focused={focusIndex === 3}
+          focused={focusIndex === 4}
           focusedBackgroundColor={theme.bg.hover}
           onChange={(index) => setThemeHighlightedIndex(index)}
           onSelect={(index) => {

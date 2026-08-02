@@ -110,6 +110,7 @@ export const useCommitFlowStore = create<CommitFlowState>((set, get) => ({
           model,
           config ? config.instructionPrefix : DEFAULT_INSTRUCTION_PREFIX,
           config ? config.instructionSuffix : "",
+          config ? config.maxRetries : undefined,
         );
         set((s) => ({
           generating: false,

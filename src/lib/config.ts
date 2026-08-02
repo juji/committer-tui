@@ -17,6 +17,7 @@ export interface Config {
   instructionSuffix: string
   theme: string
   models: Model[]
+  maxRetries?: number
 }
 
 export const DEFAULT_INSTRUCTION_PREFIX =
@@ -56,6 +57,7 @@ export function isValidConfig(config: unknown): config is Config {
     (c.instructionPrefix === undefined || typeof c.instructionPrefix === "string") &&
     (c.instructionSuffix === undefined || typeof c.instructionSuffix === "string") &&
     (c.theme === undefined || typeof c.theme === "string") &&
+    (c.maxRetries === undefined || typeof c.maxRetries === "number") &&
     Array.isArray(c.models) &&
     c.models.length > 0 &&
     c.models.every(isValidModel)

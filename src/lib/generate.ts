@@ -8,7 +8,7 @@ const END_RE = /`{3}/
 export const FENCE_INSTRUCTIONS =
   'Wrap the commit message, and only the commit message, in a fenced block like this:\n\n```commit-message\nthe message\n```\n\nDo not include any other commentary, explanation, or preamble outside that block.'
 
-export async function generateCommitMessage(diff: string, model: Model, instructionPrefix: string, instructionSuffix: string): Promise<string> {
+export async function generateCommitMessage(diff: string, model: Model, instructionPrefix: string, instructionSuffix: string, maxRetries?: number): Promise<string> {
   const p = BUILTIN_PROVIDERS[model.provider]
   if (!p) throw new Error(`Unknown provider: ${model.provider}`)
 
@@ -18,6 +18,7 @@ export async function generateCommitMessage(diff: string, model: Model, instruct
     model: await p.createModel(model),
     system,
     prompt: `Git diff:\n\n${diff}`,
+    ...(maxRetries !== undefined ? { maxRetries } : {}),
   })
 
   const startMatch = text.match(START_RE)
