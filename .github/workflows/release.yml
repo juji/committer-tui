@@ -33,12 +33,22 @@ jobs:
       - run: npm version --no-git-tag-version "${GITHUB_REF_NAME#v}"
         shell: bash
       - run: bun build --compile --target=${{ matrix.target }} src/index.tsx --outfile ${{ matrix.asset }}
-      - if: runner.os == 'macOS'
-        run: codesign --force -s - ${{ matrix.asset }}
-      - uses: actions/upload-artifact@v4
+      - if: runner.os != 'macOS'
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset }}
           path: ${{ matrix.asset }}
+      # macOS binaries are signed and uploaded to the release directly from this
+      # job — actions/upload-artifact zips and re-extracts the file, which
+      # invalidates the ad-hoc signature before it ever reaches the release.
+      - if: runner.os == 'macOS'
+        run: codesign --force -s - ${{ matrix.asset }}
+      - if: runner.os == 'macOS'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.asset }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
 
   release:
     needs: build
