@@ -39,24 +39,23 @@ chmod +x "$dest"
 
 echo "Installed $version to $dest"
 
-if [ "$os" = "Darwin" ]; then
-  # First execution of a freshly-written binary can race macOS's code-signature
-  # validation and get killed even though the signature is valid. Retry a few
-  # times with a short wait so that race doesn't surprise the user later, and
-  # confirm the binary actually reports the version we just installed.
-  expected="${version#v}"
-  ok=""
-  for attempt in 1 2 3; do
-    actual="$("$dest" --version 2>/dev/null || true)"
-    if [ "$actual" = "$expected" ]; then
-      ok=1
-      break
-    fi
-    sleep 2
-  done
-  if [ -z "$ok" ]; then
-    echo "warning: could not verify $dest reports version $expected (got: '${actual:-}')" >&2
+# On macOS, first execution of a freshly-written binary can race the kernel's
+# code-signature validation and get killed even though the signature is
+# valid. Retry a few times with a short wait so that race doesn't surprise
+# the user later, and confirm the binary actually reports the version we
+# just installed.
+expected="${version#v}"
+ok=""
+for attempt in 1 2 3; do
+  actual="$("$dest" --version 2>/dev/null || true)"
+  if [ "$actual" = "$expected" ]; then
+    ok=1
+    break
   fi
+  sleep 2
+done
+if [ -z "$ok" ]; then
+  echo "warning: could not verify $dest reports version $expected (got: '${actual:-}')" >&2
 fi
 
 case ":$PATH:" in
