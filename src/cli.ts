@@ -51,6 +51,7 @@ export async function runCli(): Promise<void> {
 
   const diffs = await getDiffs(selected as string[]);
   const combinedDiff = diffs.map((d) => d.diff).join("\n");
+  p.log.info(`Sending ${combinedDiff.length} characters of diff to the AI`);
 
   let message: string | null = null;
   for (const model of config.models) {
