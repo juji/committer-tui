@@ -56,7 +56,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 <div class="ticks"></div>
 
 <section id="install">
-  <h2>Get it running</h2>
+  <h2>Install</h2>
   <p>Prebuilt binary, no Bun required:</p>
   <div class="code-block">
     <div class="code-block-bar"><button class="copy-btn" type="button">Copy</button></div>
@@ -82,6 +82,30 @@ ln -s "$(pwd)/committer-bin" /usr/local/bin/committer</pre>
     <li>Windows (Git Bash / MSYS2 / Cygwin)</li>
     <li>x64 &amp; arm64</li>
   </ul>
+  <h2 class="get-it-running">Get it running</h2>
+  <p class="tui-intro">Run <code>committer</code> to start with config, and run the TUI. Prefer plain prompts in the terminal over a full-screen UI? <code>committer -c</code> runs the same commit cycle without the TUI.</p>
+  <p class="help-preview-intro">Run <code>committer -h</code> or <code>committer --help</code> to view help content:</p>
+  <pre class="help-preview">committer v0.8.15 — AI-powered commit messages for git
+
+USAGE
+  committer                 Start the TUI
+  committer -c              Run the commit cycle in the terminal (no TUI)
+  committer --help, -h      Show this message
+  committer --version, -v   Show the installed version
+
+KEYBOARD
+  ctrl+c       Exit
+  ctrl+g       Open config
+  ctrl+y       Toggle history sidebar
+  tab          Cycle focus between areas
+  enter        Activate focused button
+  esc          Go back / close panel
+
+CONFIG
+  ~/.config/committer/config.json
+
+All providers, instructions, and theme are configured
+from within the TUI.</pre>
 </section>
 
 <div class="ticks"></div>

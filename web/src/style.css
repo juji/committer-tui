@@ -272,6 +272,32 @@ a {
   }
 }
 
+.get-it-running {
+  margin-top: 32px;
+}
+
+.tui-intro {
+  margin-top: 16px;
+}
+
+.help-preview-intro {
+  margin-top: 24px;
+}
+
+.help-preview {
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.5;
+  color: #c9d1d9;
+  background-color: #24292e;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 12px 0 16px;
+  white-space: pre;
+  overflow-x: auto;
+}
+
 .copy-btn {
   height: 1.5em;
   border: none;
