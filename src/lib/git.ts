@@ -1,6 +1,14 @@
+import os from "node:os";
+
 export interface ChangedFile {
   path: string;
   status: string;
+}
+
+export function displayPath(cwd: string): string {
+  if (process.platform === "win32") return cwd;
+  const home = os.homedir();
+  return cwd === home || cwd.startsWith(home + "/") ? `~${cwd.slice(home.length)}` : cwd;
 }
 
 // `git status --porcelain` reports paths relative to the repo root, not the
@@ -9,7 +17,7 @@ export interface ChangedFile {
 // resolves against the cwd instead (e.g. "src/lib/src/foo.ts" when run from
 // src/lib), and git silently reports no changes.
 let repoRootPromise: Promise<string> | null = null;
-function getRepoRoot(): Promise<string> {
+export function getRepoRoot(): Promise<string> {
   if (!repoRootPromise) {
     repoRootPromise = (async () => {
       const proc = Bun.spawn(["git", "rev-parse", "--show-toplevel"], { cwd: process.cwd(), stdout: "pipe", stderr: "pipe" });

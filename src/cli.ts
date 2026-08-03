@@ -7,7 +7,7 @@ import os from "node:os";
 import path from "node:path";
 import { DEFAULT_INSTRUCTION_PREFIX, readConfig } from "./lib/config";
 import { generateCommitMessage } from "./lib/generate";
-import { addPaths, getChangedFiles, getDiffs, runGitStreaming } from "./lib/git";
+import { addPaths, displayPath, getChangedFiles, getDiffs, getRepoRoot, runGitStreaming } from "./lib/git";
 
 function editInEditor(initial: string): string {
   const dir = mkdtempSync(path.join(os.tmpdir(), "committer-"));
@@ -25,6 +25,9 @@ function editInEditor(initial: string): string {
 
 export async function runCli(): Promise<void> {
   p.intro("committer -c");
+
+  const repoRoot = await getRepoRoot().catch(() => null);
+  if (repoRoot) p.log.info(displayPath(repoRoot));
 
   const config = await readConfig();
   if (!config || config.models.length === 0) {

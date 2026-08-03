@@ -2,13 +2,13 @@
 import type { KeyEvent } from "@opentui/core";
 import { createCliRenderer } from "@opentui/core";
 import { useAppContext, createRoot } from "@opentui/react";
-import os from "node:os";
 import { useEffect } from "react";
 import packageJson from "../package.json";
 import { AppScreen } from "./components/app";
 import { ErrorBoundary } from "./components/error-boundary";
 import { Layout } from "./components/layout";
 import { Splash } from "./components/splash";
+import { displayPath } from "./lib/git";
 import { useGlobalShortcuts } from "./lib/shortcuts";
 import { useAppStore } from "./store/app-store";
 import { useKeyboardStore } from "./store/keyboard-store";
@@ -34,12 +34,6 @@ function App() {
       </Layout>
     </ErrorBoundary>
   );
-}
-
-function displayPath(cwd: string): string {
-  if (process.platform === "win32") return cwd;
-  const home = os.homedir();
-  return cwd === home || cwd.startsWith(home + "/") ? `~${cwd.slice(home.length)}` : cwd;
 }
 
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
