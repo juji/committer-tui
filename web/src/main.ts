@@ -91,7 +91,7 @@ ln -s "$(pwd)/committer-bin" /usr/local/bin/committer</pre>
 
 USAGE
   committer                 Start the TUI
-  committer -c              Run the commit cycle in the terminal (no TUI)
+  committer -c, --cli       Run the commit cycle in the terminal (no TUI)
   committer --help, -h      Show this message
   committer --version, -v   Show the installed version
 

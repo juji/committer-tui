@@ -52,7 +52,7 @@ if (process.argv.includes("--help") || process.argv.includes("-h")) {
 
 USAGE
   committer                 Start the TUI
-  committer -c              Run the commit cycle in the terminal (no TUI)
+  committer -c, --cli       Run the commit cycle in the terminal (no TUI)
   committer --help, -h      Show this message
   committer --version, -v   Show the installed version
 
