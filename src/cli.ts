@@ -71,7 +71,7 @@ export async function runCli(): Promise<void> {
   }
 
   for (;;) {
-    p.note(message, "Commit message");
+    p.note(message, "Commit message", { format: (line) => `\x1b[32m${line}\x1b[0m` });
     const action = await p.select({
       message: "Proceed?",
       options: [
