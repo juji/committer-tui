@@ -195,6 +195,10 @@ a {
   }
 }
 
+#install p {
+  margin-top: 12px;
+}
+
 .platforms {
   list-style: none;
   display: flex;
