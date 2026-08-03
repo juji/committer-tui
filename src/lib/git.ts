@@ -3,16 +3,36 @@ export interface ChangedFile {
   status: string;
 }
 
-function spawnGit(args: string[]) {
+// `git status --porcelain` reports paths relative to the repo root, not the
+// current working directory. Running every git command from the repo root
+// keeps those paths valid — otherwise diff/add for a path like "src/foo.ts"
+// resolves against the cwd instead (e.g. "src/lib/src/foo.ts" when run from
+// src/lib), and git silently reports no changes.
+let repoRootPromise: Promise<string> | null = null;
+function getRepoRoot(): Promise<string> {
+  if (!repoRootPromise) {
+    repoRootPromise = (async () => {
+      const proc = Bun.spawn(["git", "rev-parse", "--show-toplevel"], { cwd: process.cwd(), stdout: "pipe", stderr: "pipe" });
+      const [stdout, exitCode] = await Promise.all([new Response(proc.stdout).text(), proc.exited]);
+      if (exitCode !== 0) throw new Error("not a git repository");
+      return stdout.trim();
+    })();
+  }
+  return repoRootPromise;
+}
+
+async function spawnGit(args: string[]) {
   try {
-    return Bun.spawn(["git", ...args], { cwd: process.cwd(), stdout: "pipe", stderr: "pipe" });
-  } catch {
+    const cwd = await getRepoRoot();
+    return Bun.spawn(["git", ...args], { cwd, stdout: "pipe", stderr: "pipe" });
+  } catch (err) {
+    if (err instanceof Error && err.message === "not a git repository") throw err;
     throw new Error("git not found — is it installed and in PATH?");
   }
 }
 
 async function runGit(args: string[], allowedExitCodes: number[] = [0]): Promise<string> {
-  const proc = spawnGit(args);
+  const proc = await spawnGit(args);
   const [stdout, exitCode] = await Promise.all([new Response(proc.stdout).text(), proc.exited]);
   if (!allowedExitCodes.includes(exitCode)) {
     const stderr = await new Response(proc.stderr).text();
@@ -22,7 +42,7 @@ async function runGit(args: string[], allowedExitCodes: number[] = [0]): Promise
 }
 
 export async function runGitStreaming(args: string[], onLine: (line: string) => void): Promise<void> {
-  const proc = spawnGit(args);
+  const proc = await spawnGit(args);
 
   const readLines = async (stream: ReadableStream<Uint8Array>) => {
     for await (const chunk of stream) {
