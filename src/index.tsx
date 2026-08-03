@@ -48,13 +48,13 @@ if (process.argv.includes("--version") || process.argv.includes("-v")) {
 }
 
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
-  console.log(`committer — AI-powered commit messages for git
+  console.log(`committer v${packageJson.version} — AI-powered commit messages for git
 
 USAGE
-  committer          Start the TUI
-  committer -c        Run the commit cycle in the terminal (no TUI)
-  committer --help   Show this message
-  committer --version Show the installed version
+  committer                 Start the TUI
+  committer -c              Run the commit cycle in the terminal (no TUI)
+  committer --help, -h      Show this message
+  committer --version, -v   Show the installed version
 
 KEYBOARD
   ctrl+c       Exit
