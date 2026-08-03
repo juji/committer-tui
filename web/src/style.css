@@ -288,6 +288,16 @@ a {
   margin-top: 24px;
 }
 
+.cli-screenshot {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: 24px auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
 .help-preview {
   text-align: left;
   font-family: var(--mono);

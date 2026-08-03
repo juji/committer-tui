@@ -85,6 +85,7 @@ ln -s "$(pwd)/committer-bin" /usr/local/bin/committer</pre>
   <h2 class="get-it-running">Get it running</h2>
   <p class="tui-intro">Run <code>committer</code> to start with config, and run the TUI.</p>
   <p>Prefer plain prompts in the terminal over a full-screen UI? <code>committer -c</code> runs the same commit cycle without the TUI.</p>
+  <img class="cli-screenshot" src="/cli.png" alt="committer -c running in the terminal with plain prompts" />
   <p class="help-preview-intro">Run <code>committer -h</code> or <code>committer --help</code> to view help content:</p>
   <pre class="help-preview">committer v0.8.15 — AI-powered commit messages for git
 
